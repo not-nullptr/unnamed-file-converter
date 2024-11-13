@@ -5,28 +5,40 @@
 	import { quintOut } from "svelte/easing";
 	import { files } from "$lib/store/index.svelte";
 	import Logo from "$lib/components/visual/svg/Logo.svelte";
-	import { fly } from "svelte/transition";
 	import featuredImage from "$lib/assets/VERT_Feature.webp";
 	import { PUB_HOSTNAME, PUB_PLAUSIBLE_URL } from "$env/static/public";
+	import FancyMenu from "$lib/components/functional/FancyMenu.svelte";
+	import { writable } from "svelte/store";
 	let { children, data } = $props();
 
-	let navWidth = $state(1);
-	let shouldGoBack = $state(false);
+	let shouldGoBack = writable(false);
 
-	const links = $derived<{
-		[key: string]: string;
-	}>({
-		Upload: "/",
-		[files.files.length > 0
-			? `Convert (${files.files.length})`
-			: `Convert`]: "/convert",
-		About: "/about",
-	});
-
-	const linkCount = $derived(Object.keys(links).length);
-	const linkIndex = $derived(
-		Object.keys(links).findIndex((link) => links[link] === data.pathname),
-	);
+	const links = $derived<
+		{
+			name: string;
+			url: string;
+			activeMatch: (pathname: string) => boolean;
+		}[]
+	>([
+		{
+			name: "Upload",
+			url: "/",
+			activeMatch: (pathname) => pathname === "/",
+		},
+		{
+			name:
+				files.files.length > 0
+					? `Convert (${files.files.length})`
+					: `Convert`,
+			url: "/convert",
+			activeMatch: (pathname) => pathname === "/convert",
+		},
+		{
+			name: "About",
+			url: "/about",
+			activeMatch: (pathname) => pathname.startsWith("/about"),
+		},
+	]);
 
 	const maybeNavToHome = (e: DragEvent) => {
 		if (e.dataTransfer?.types.includes("Files")) {
@@ -78,54 +90,7 @@
 			</a>
 		</div>
 
-		<div
-			bind:clientWidth={navWidth}
-			class="w-full flex bg-background relative h-16"
-		>
-			<div
-				class="absolute pointer-events-none top-1 bg-foreground h-[calc(100%-8px)] rounded-xl"
-				style="width: {navWidth / linkCount - 8}px; left: {(navWidth /
-					linkCount) *
-					linkIndex +
-					4}px; transition: {duration - 200}ms ease left;"
-			></div>
-			{#each Object.entries(links) as [name, link] (link)}
-				<a
-					class="w-1/2 px-2 h-[calc(100%-16px)] mt-2 flex items-center justify-center rounded-xl relative font-display overflow-hidden"
-					href={link}
-					onclick={() => {
-						const keys = Object.keys(links);
-						const currentIndex = keys.findIndex(
-							(key) => links[key] === data.pathname,
-						);
-						const nextIndex = keys.findIndex(
-							(key) => links[key] === link,
-						);
-						shouldGoBack = nextIndex < currentIndex;
-					}}
-				>
-					<div class="grid grid-cols-1 grid-rows-1">
-						{#key name}
-							<span
-								class="mix-blend-difference invert col-start-1 row-start-1 text-center"
-								in:fly={{
-									duration,
-									easing: quintOut,
-									y: -50,
-								}}
-								out:fly={{
-									duration,
-									easing: quintOut,
-									y: 50,
-								}}
-							>
-								{name}
-							</span>
-						{/key}
-					</div>
-				</a>
-			{/each}
-		</div>
+		<FancyMenu {links} {shouldGoBack} />
 	</div>
 	<div class="w-full max-w-screen-lg grid grid-cols-1 grid-rows-1 relative">
 		{#key data.pathname}
@@ -137,7 +102,7 @@
 						easing: quintOut,
 						blurMultiplier: 12,
 						x: {
-							start: !shouldGoBack ? 250 : -250,
+							start: !$shouldGoBack ? 250 : -250,
 							end: 0,
 						},
 						scale: {
@@ -151,7 +116,7 @@
 						blurMultiplier: 12,
 						x: {
 							start: 0,
-							end: !shouldGoBack ? -250 : 250,
+							end: !$shouldGoBack ? -250 : 250,
 						},
 						scale: {
 							start: 1,
