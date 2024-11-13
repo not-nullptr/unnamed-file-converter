@@ -9,7 +9,7 @@
 	import { PUB_HOSTNAME, PUB_PLAUSIBLE_URL } from "$env/static/public";
 	import FancyMenu from "$lib/components/functional/FancyMenu.svelte";
 	import { writable } from "svelte/store";
-	import { SunIcon } from "lucide-svelte";
+	import { MoonIcon, SunIcon } from "lucide-svelte";
 	import { browser } from "$app/environment";
 	import { setCookie } from "typescript-cookie";
 	let { children, data } = $props();
@@ -112,8 +112,82 @@
 
 		<FancyMenu {links} {shouldGoBack} />
 		<div class="h-16 px-4 flex items-center">
-			<button onclick={theme.toggle}>
-				<SunIcon />
+			<button onclick={theme.toggle} class="grid-cols-1 grid-rows-1 grid">
+				<!-- {#if theme.dark}
+					<div
+						class="w-full h-full flex items-center justify-center row-start-1 col-start-1"
+					>
+						<MoonIcon />
+					</div>
+				{:else}
+					<div
+						class="w-full h-full flex items-center justify-center row-start-1 col-start-1"
+					>
+						<SunIcon />
+					</div>
+				{/if} -->
+				{#if browser}
+					{#if theme.dark}
+						<div
+							in:blur={{
+								blurMultiplier: 1,
+								duration,
+								easing: quintOut,
+								scale: {
+									start: 0.5,
+									end: 1,
+								},
+							}}
+							out:blur={{
+								blurMultiplier: 1,
+								duration,
+								easing: quintOut,
+								scale: {
+									start: 1,
+									end: 1.5,
+								},
+							}}
+							class="w-full h-full flex items-center justify-center row-start-1 col-start-1"
+						>
+							<MoonIcon class="w-8" />
+						</div>
+					{:else}
+						<div
+							in:blur={{
+								blurMultiplier: 1,
+								duration,
+								easing: quintOut,
+								scale: {
+									start: 0.5,
+									end: 1,
+								},
+							}}
+							out:blur={{
+								blurMultiplier: 1,
+								duration,
+								easing: quintOut,
+								scale: {
+									start: 1,
+									end: 1.5,
+								},
+							}}
+							class="w-full h-full flex items-center justify-center row-start-1 col-start-1"
+						>
+							<SunIcon class="w-8" />
+						</div>
+					{/if}
+				{:else}
+					<div
+						class="w-full h-full flex items-center justify-center row-start-1 col-start-1 dynadark:hidden"
+					>
+						<SunIcon class="w-8" />
+					</div>
+					<div
+						class="w-full h-full hidden items-center justify-center row-start-1 col-start-1 dynadark:flex"
+					>
+						<MoonIcon class="w-8" />
+					</div>
+				{/if}
 			</button>
 		</div>
 	</div>

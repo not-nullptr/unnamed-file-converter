@@ -4,6 +4,9 @@
 	import { duration } from "$lib/animation";
 	import { quintOut } from "svelte/easing";
 	import type { Writable } from "svelte/store";
+	import clsx from "clsx";
+	import { browser } from "$app/environment";
+	import { onMount, tick } from "svelte";
 
 	interface Props {
 		links: {
@@ -16,16 +19,25 @@
 
 	let { links, shouldGoBack = null }: Props = $props();
 
+	let hasLoaded = $state(false);
+
 	let navWidth = $state(1);
 	let linkCount = $derived(links.length);
 	let activeLinkIndex = $derived(
 		links.findIndex((i) => i.activeMatch($page.url.pathname)),
 	);
+
+	onMount(async () => {
+		await tick();
+		setTimeout(() => {
+			hasLoaded = true;
+		}, 16);
+	});
 </script>
 
 <div
 	bind:clientWidth={navWidth}
-	class="w-full flex bg-background relative h-16"
+	class="w-full flex bg-background relative h-16 items-center"
 >
 	{#if activeLinkIndex !== -1}
 		<div
@@ -33,12 +45,17 @@
 			style="width: {navWidth / linkCount - 8}px; left: {(navWidth /
 				linkCount) *
 				activeLinkIndex +
-				4}px; transition: {duration - 200}ms ease left;"
+				4}px; transition: {hasLoaded ? duration - 200 : 0}ms ease left;"
 		></div>
 	{/if}
 	{#each links as { name, url } (url)}
 		<a
-			class="w-1/2 px-2 h-[calc(100%-16px)] mt-2 flex items-center justify-center rounded-xl relative overflow-hidden font-medium"
+			class={clsx(
+				"w-1/2 px-2 ml-1 h-[calc(100%-8px)] mr-1 flex items-center justify-center rounded-xl relative overflow-hidden font-medium",
+				{
+					"bg-foreground": $page.url.pathname === url && !browser,
+				},
+			)}
 			href={url}
 			onclick={() => {
 				if (shouldGoBack) {
