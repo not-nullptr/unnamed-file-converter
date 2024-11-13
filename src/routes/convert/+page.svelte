@@ -46,6 +46,8 @@
 		convertersRequired.every((c) => c.ready),
 	);
 
+	files.beenToConverterPage = true;
+
 	onMount(() => {
 		isSm = window.innerWidth < 640;
 		window.addEventListener("resize", () => {
