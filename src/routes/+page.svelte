@@ -77,6 +77,7 @@
 		isMobile={data.isMobile}
 		bind:files={ourFiles}
 		onupload={runUpload}
+		acceptedFormats={converters.flatMap((c) => c.supportedFormats)}
 	/>
 </div>
 

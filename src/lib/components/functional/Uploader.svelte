@@ -10,6 +10,7 @@
 		files: File[] | undefined;
 		onupload?: () => void;
 		isMobile: boolean;
+		acceptedFormats?: string[];
 	}
 
 	$effect(() => {
@@ -20,7 +21,7 @@
 	let fileInput = $state<HTMLInputElement>();
 	let dragOver = $state(false);
 
-	let { files = $bindable(), onupload, isMobile }: Props = $props();
+	let { files = $bindable(), onupload, isMobile, acceptedFormats }: Props = $props();
 
 	function upload() {
 		if (!fileInput) return;
@@ -108,6 +109,7 @@
 	class="hidden"
 	bind:this={fileInput}
 	onchange={addFiles}
+	accept={acceptedFormats?.join(",") ?? "*"}
 	multiple
 />
 
