@@ -18,3 +18,5 @@ class Files {
 }
 
 export const files = new Files();
+
+export const outputFilenameOption = ['default', 'original'];

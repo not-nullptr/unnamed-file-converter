@@ -5,7 +5,7 @@
 	import ProgressiveBlur from "$lib/components/visual/effects/ProgressiveBlur.svelte";
 	import { converters } from "$lib/converters";
 	import type { Converter } from "$lib/converters/converter.svelte";
-	import { files } from "$lib/store/index.svelte";
+	import { files, outputFilenameOption } from "$lib/store/index.svelte";
 	import clsx from "clsx";
 	import { ArrowRight, XIcon } from "lucide-svelte";
 	import { onMount } from "svelte";
@@ -45,6 +45,9 @@
 	const allConvertersReady = $derived(
 		convertersRequired.every((c) => c.ready),
 	);
+	
+	// Options
+	let outputFilename = $state(outputFilenameOption[0]);
 
 	onMount(() => {
 		isSm = window.innerWidth < 640;
@@ -107,6 +110,7 @@
 	};
 
 	const downloadAll = async () => {
+		const date = new Date().toISOString();
 		const dlFiles: any[] = [];
 		for (let i = 0; i < files.files.length; i++) {
 			const file = files.files[i];
@@ -124,6 +128,9 @@
 		if (files.files.length === 0) return;
 		if (files.files.length === 1) {
 			// download the image only
+			const filename = outputFilename === "default"
+				? `VERT-Converted_${date}`
+				: files.files[0].file.name.replace(/\.[^/.]+$/, "");
 			const blob = URL.createObjectURL(
 				new Blob([dlFiles[0].input], {
 					type: files.files[0].to.slice(1),
@@ -131,9 +138,7 @@
 			);
 			const a = document.createElement("a");
 			a.href = blob;
-			a.download = `VERT-Converted_${new Date().toISOString()}${
-				files.files[0].to
-			}`;
+			a.download = `${filename}${files.files[0].to}`;
 			a.click();
 			URL.revokeObjectURL(blob);
 			a.remove();
@@ -177,6 +182,25 @@
 			>
 				<h2 class="font-bold text-xl mb-1">Options</h2>
 				<div class="flex flex-col w-full gap-4 mt-2">
+					<div class="flex flex-col gap-3 w-fit">
+						<h3>Output filename</h3>
+						<div class="grid grid-rows-1 grid-cols-1">
+							<div
+								transition:blur={{
+									blurMultiplier: 8,
+									duration,
+									easing: quintOut,
+								}}
+								class="row-start-1 col-start-1 w-fit"
+							>
+								<Dropdown
+									options={outputFilenameOption}
+									selected={outputFilename}
+									onselect={(o) => outputFilename = o}
+								/>
+							</div>
+						</div>
+					</div>
 					<div class="flex flex-col gap-3 w-fit">
 						<h3>Set all target formats</h3>
 						<div class="grid grid-rows-1 grid-cols-1">
