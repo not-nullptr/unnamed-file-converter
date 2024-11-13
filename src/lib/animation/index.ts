@@ -55,7 +55,7 @@ export const blur = (
 				origin: Combination<
 					"top" | "bottom" | "left" | "right" | "center",
 					"top" | "bottom" | "left" | "right" | "center"
-				>;
+				> & {};
 		  }>
 		| undefined,
 	dir: {
