@@ -32,6 +32,8 @@
 		"vite": "^5.0.3"
 	},
 	"dependencies": {
+		"@ffmpeg/ffmpeg": "^0.12.10",
+		"@ffmpeg/util": "^0.12.1",
 		"@fontsource/azeret-mono": "^5.1.0",
 		"@fontsource/lexend": "^5.1.1",
 		"@imagemagick/magick-wasm": "^0.0.31",

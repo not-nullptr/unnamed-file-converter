@@ -6,8 +6,6 @@ import {
 } from "@imagemagick/magick-wasm";
 import wasmUrl from "@imagemagick/magick-wasm/magick.wasm?url";
 
-console.log(wasmUrl);
-
 const magickPromise = fetch(wasmUrl)
 	.then((r) => r.arrayBuffer())
 	.then((r) => initializeImageMagick(r));

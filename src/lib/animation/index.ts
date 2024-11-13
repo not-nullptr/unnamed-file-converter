@@ -67,7 +67,6 @@ export const blur = (
 	).matches;
 	if (typeof config?.opacity === "undefined" && config) config.opacity = true;
 	const isUsingTranslate = !!config?.x || !!config?.y || !!config?.scale;
-	console.log(isUsingTranslate);
 	return {
 		delay: config?.delay || 0,
 		duration: prefersReducedMotion ? 0 : config?.duration || 300,
@@ -155,7 +154,6 @@ export function flip(
 	const [ox, oy] = style.transformOrigin.split(" ").map(parseFloat);
 	const dx = from.left + (from.width * ox) / to.width - (to.left + ox);
 	const dy = from.top + (from.height * oy) / to.height - (to.top + oy);
-
 	const {
 		delay = 0,
 		duration = (d) => Math.sqrt(d) * 120,

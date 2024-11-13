@@ -19,6 +19,11 @@ export default defineConfig({
 		},
 	],
 	optimizeDeps: {
-		exclude: ["wasm-vips"],
+		exclude: [
+			"wasm-vips",
+			"@ffmpeg/core-mt",
+			"@ffmpeg/ffmpeg",
+			"@ffmpeg/util",
+		],
 	},
 });

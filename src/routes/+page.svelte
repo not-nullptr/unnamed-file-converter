@@ -12,13 +12,22 @@
 	const runUpload = () => {
 		files.files = [
 			...files.files,
-			...(ourFiles || []).map((f) => ({
-				file: f,
-				from: "." + f.name.split(".").slice(-1),
-				to: converters[0].supportedFormats[0],
-				blobUrl: URL.createObjectURL(f),
-				id: Math.random().toString(36).substring(2),
-			})),
+			...(ourFiles || []).map((f, i) => {
+				const from = "." + f.name.toLowerCase().split(".").slice(-1);
+				const converter = converters.find((c) =>
+					c.supportedFormats.includes(from),
+				);
+				const to =
+					converter?.supportedFormats.find((f) => f !== from) ||
+					converters[0].supportedFormats[0];
+				return {
+					file: f,
+					from,
+					to,
+					blobUrl: URL.createObjectURL(f),
+					id: Math.random().toString(36).substring(2),
+				};
+			}),
 		];
 
 		ourFiles = [];
