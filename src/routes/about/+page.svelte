@@ -67,7 +67,7 @@
 	<ul class="list-disc list-inside mt-6">
 		<li class="text-transition" style="--delay: {6 * multiplier}ms">
 			<a
-				href="https://github.com/notnullptr/VERT"
+				href="https://github.com/not-nullptr/VERT"
 				class="text-foreground-highlight hover:underline">Source code</a
 			> (hosted on GitHub, licensed under AGPL-3.0)
 		</li>
