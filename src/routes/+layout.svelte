@@ -130,10 +130,15 @@
 							start: !$shouldGoBack ? 250 : -250,
 							end: 0,
 						},
+						y: {
+							start: 100,
+							end: 0,
+						},
 						scale: {
 							start: 0.75,
 							end: 1,
 						},
+						origin: "top center",
 					}}
 					out:blur={{
 						duration,
@@ -143,10 +148,15 @@
 							start: 0,
 							end: !$shouldGoBack ? -250 : 250,
 						},
+						y: {
+							start: 0,
+							end: 100,
+						},
 						scale: {
 							start: 1,
 							end: 0.75,
 						},
+						origin: "top center",
 					}}
 				>
 					<div class="pb-20">
