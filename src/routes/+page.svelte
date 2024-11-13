@@ -9,25 +9,60 @@
 
 	let ourFiles = $state<File[]>();
 
-	const runUpload = () => {
+	const runUpload = async () => {
+		const newFilePromises = (ourFiles || []).map(async (f) => {
+			return new Promise<(typeof files.files)[0] | void>(
+				(resolve, reject) => {
+					const from =
+						"." + f.name.toLowerCase().split(".").slice(-1);
+					const converter = converters.find((c) =>
+						c.supportedFormats.includes(from),
+					);
+					console.log(converter);
+					if (!converter) resolve();
+					const to =
+						converter?.supportedFormats.find((f) => f !== from) ||
+						converters[0].supportedFormats[0];
+					// create a canvas and clamp the width or height to 1024, whichever is larger
+					// also, maintain aspect ratio
+					const canvas = document.createElement("canvas");
+					const ctx = canvas.getContext("2d");
+					const img = new Image();
+					img.src = URL.createObjectURL(f);
+					const maxSize = 512;
+					img.onload = () => {
+						const scale = Math.max(
+							maxSize / img.width,
+							maxSize / img.height,
+						);
+						canvas.width = img.width * scale;
+						canvas.height = img.height * scale;
+						ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+						// get the blob
+						canvas.toBlob(
+							(blob) => {
+								if (blob === null)
+									reject("Failed to convert image to blob");
+								resolve({
+									file: f,
+									from,
+									to,
+									blobUrl: URL.createObjectURL(blob!),
+									id: Math.random().toString(36).substring(2),
+								});
+							},
+							"image/jpeg",
+							0.75,
+						);
+					};
+				},
+			);
+		});
 		files.files = [
 			...files.files,
-			...(ourFiles || []).map((f, i) => {
-				const from = "." + f.name.toLowerCase().split(".").slice(-1);
-				const converter = converters.find((c) =>
-					c.supportedFormats.includes(from),
-				);
-				const to =
-					converter?.supportedFormats.find((f) => f !== from) ||
-					converters[0].supportedFormats[0];
-				return {
-					file: f,
-					from,
-					to,
-					blobUrl: URL.createObjectURL(f),
-					id: Math.random().toString(36).substring(2),
-				};
-			}),
+			...(await Promise.all(newFilePromises)).filter(
+				(f) => typeof f !== "undefined",
+			),
 		];
 
 		ourFiles = [];
