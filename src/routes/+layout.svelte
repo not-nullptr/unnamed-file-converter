@@ -1,9 +1,9 @@
 <script lang="ts">
-	import "../app.css";
+	import "../app.scss";
 	import { goto } from "$app/navigation";
 	import { blur, duration } from "$lib/animation";
 	import { quintOut } from "svelte/easing";
-	import { files } from "$lib/store/index.svelte";
+	import { files, theme } from "$lib/store/index.svelte";
 	import Logo from "$lib/components/visual/svg/Logo.svelte";
 	import featuredImage from "$lib/assets/VERT_Feature.webp";
 	import { PUB_HOSTNAME, PUB_PLAUSIBLE_URL } from "$env/static/public";

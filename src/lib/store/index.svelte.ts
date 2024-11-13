@@ -17,4 +17,12 @@ class Files {
 	);
 }
 
+class Theme {
+	public dark = $state(false);
+	public toggle = () => {
+		this.dark = !this.dark;
+	};
+}
+
 export const files = new Files();
+export const theme = new Theme();
