@@ -45,7 +45,7 @@
 	const allConvertersReady = $derived(
 		convertersRequired.every((c) => c.ready),
 	);
-	
+
 	// Options
 	let outputFilename = $state(outputFilenameOption[0]);
 
@@ -56,10 +56,10 @@
 		});
 
 		// reloads the "output filename" option
-		const savedOption = localStorage.getItem('outputFilename');
-        if (savedOption) {
-            outputFilename = savedOption;
-        }
+		const savedOption = localStorage.getItem("outputFilename");
+		if (savedOption) {
+			outputFilename = savedOption;
+		}
 	});
 
 	let disabled = $derived(files.files.some((f) => !f.result));
@@ -134,9 +134,10 @@
 		if (files.files.length === 0) return;
 		if (files.files.length === 1) {
 			// download the image only
-			const filename = outputFilename === "default"
-				? `VERT-Converted_${date}`
-				: files.files[0].file.name.replace(/\.[^/.]+$/, "");
+			const filename =
+				outputFilename === "default"
+					? `VERT-Converted_${date}`
+					: files.files[0].file.name.replace(/\.[^/.]+$/, "");
 			const blob = URL.createObjectURL(
 				new Blob([dlFiles[0].input], {
 					type: files.files[0].to.slice(1),
@@ -204,7 +205,10 @@
 									selected={outputFilename}
 									onselect={(o) => {
 										outputFilename = o;
-										localStorage.setItem('outputFilename', o);
+										localStorage.setItem(
+											"outputFilename",
+											o,
+										);
 									}}
 								/>
 							</div>
