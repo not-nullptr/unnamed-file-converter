@@ -88,7 +88,7 @@
 	<div class="flex justify-center mb-5 lg:hidden">
 		<a
 			href="/"
-			class="px-6 relative h-16 mr-3 justify-center items-center bg-accent-background fill-accent-foreground rounded-xl md:hidden flex"
+			class="px-4 relative h-14 mr-3 justify-center items-center bg-accent-background fill-accent-foreground rounded-xl md:hidden flex"
 		>
 			<div class="h-6 w-24 items-center flex justify-center">
 				<Logo />

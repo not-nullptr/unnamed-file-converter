@@ -38,7 +38,7 @@
 	{/if}
 	{#each links as { name, url } (url)}
 		<a
-			class="w-1/2 px-2 h-[calc(100%-16px)] mt-2 flex items-center justify-center rounded-xl relative font-display overflow-hidden"
+			class="w-1/2 px-2 h-[calc(100%-16px)] mt-2 flex items-center justify-center rounded-xl relative overflow-hidden font-medium"
 			href={url}
 			onclick={() => {
 				if (shouldGoBack) {

@@ -36,18 +36,18 @@
 	--fg: hsl(0, 0%, 10%);
 	--fg-muted: hsl(0, 0%, 50%);
 	--fg-muted-alt: hsl(0, 0%, 75%);
-	--fg-highlight: hsl(303, 52%, 42%);
+	--fg-highlight: hsl(303, 61%, 47%);
 	--fg-failure: hsl(0, 67%, 49%);
 }
 
 @mixin dark {
-	--accent-bg: hsl(303, 73%, 35%);
-	--accent-fg: hsl(0, 0%, 90%);
-	--bg: hsl(0, 0%, 10%);
+	--accent-bg: hsl(304, 41%, 21%);
+	--accent-fg: hsl(303, 73%, 81%);
+	--bg: hsl(0, 0%, 8%);
 	--fg: hsl(0, 0%, 90%);
-	--fg-muted: hsl(0, 0%, 65%);
-	--fg-muted-alt: hsl(0, 0%, 50%);
-	--fg-highlight: hsl(303, 52%, 60%);
+	--fg-muted: hsl(0, 0%, 50%);
+	--fg-muted-alt: hsl(0, 0%, 25%);
+	--fg-highlight: hsl(303, 64%, 65%);
 	--fg-failure: hsl(0, 67%, 80%);
 }
 
