@@ -83,10 +83,12 @@
 
 <div class="[@media(max-height:768px)]:block mt-10 picker-fly">
 	<Uploader
-		isMobile={data.isMobile}
+		isMobile={data.isMobile || false}
 		bind:files={ourFiles}
 		onupload={runUpload}
-		acceptedFormats={[...new Set(converters.flatMap((c) => c.supportedFormats))]}
+		acceptedFormats={[
+			...new Set(converters.flatMap((c) => c.supportedFormats)),
+		]}
 	/>
 </div>
 

@@ -55,7 +55,7 @@
 			<div class="grid grid-cols-1 grid-rows-1">
 				{#key name}
 					<span
-						class="mix-blend-difference light:invert dark:invert-0 col-start-1 row-start-1 text-center"
+						class="mix-blend-difference invert dynadark:invert-0 col-start-1 row-start-1 text-center"
 						in:fly={{
 							duration,
 							easing: quintOut,

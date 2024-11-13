@@ -27,13 +27,9 @@ export default {
 
 	plugins: [
 		plugin(function ({ addVariant }) {
-			addVariant("dark", [
-				"body.dark &",
-				"@media (prefers-color-scheme: dark)",
-			]);
-			addVariant("light", [
-				"body.light &",
-				"@media (prefers-color-scheme: light)",
+			addVariant("dynadark", [
+				"body:not(.light).dark &",
+				"@media (prefers-color-scheme: dark) { body:not(.light) &",
 			]);
 		}),
 	],
