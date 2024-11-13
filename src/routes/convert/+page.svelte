@@ -54,6 +54,12 @@
 		window.addEventListener("resize", () => {
 			isSm = window.innerWidth < 640;
 		});
+
+		// reloads the "output filename" option
+		const savedOption = localStorage.getItem('outputFilename');
+        if (savedOption) {
+            outputFilename = savedOption;
+        }
 	});
 
 	let disabled = $derived(files.files.some((f) => !f.result));
@@ -149,7 +155,7 @@
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = `VERT-Converted_${new Date().toISOString()}.zip`;
+		a.download = `VERT-Converted_${date}.zip`;
 		a.click();
 		URL.revokeObjectURL(url);
 		a.remove();
@@ -183,7 +189,7 @@
 				<h2 class="font-bold text-xl mb-1">Options</h2>
 				<div class="flex flex-col w-full gap-4 mt-2">
 					<div class="flex flex-col gap-3 w-fit">
-						<h3>Output filename</h3>
+						<h3>Output filename (for single image)</h3>
 						<div class="grid grid-rows-1 grid-cols-1">
 							<div
 								transition:blur={{
@@ -196,7 +202,10 @@
 								<Dropdown
 									options={outputFilenameOption}
 									selected={outputFilename}
-									onselect={(o) => outputFilename = o}
+									onselect={(o) => {
+										outputFilename = o;
+										localStorage.setItem('outputFilename', o);
+									}}
 								/>
 							</div>
 						</div>
