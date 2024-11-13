@@ -376,7 +376,7 @@
 										direction={isSm ? "bottom" : "right"}
 										endIntensity={128}
 										iterations={6}
-										fadeTo="rgba(255, 255, 255, 0.6)"
+										fadeTo="var(--bg-transparent)"
 									/>
 								</div>
 							</div>
