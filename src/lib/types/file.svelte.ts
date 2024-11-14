@@ -16,18 +16,21 @@ export class VertFile {
 
 	public to = $state("");
 
+	public blobUrl = $state<string>();
+
 	public converter: Converter | null = null;
 
 	constructor(
 		public readonly file: File,
 		to: string,
 		converter?: Converter,
-		public readonly blobUrl?: string,
+		blobUrl?: string,
 	) {
 		this.to = to;
 		this.converter = converter ?? null;
 		this.convert = this.convert.bind(this);
 		this.download = this.download.bind(this);
+		this.blobUrl = blobUrl;
 	}
 
 	public async convert() {

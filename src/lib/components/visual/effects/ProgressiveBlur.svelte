@@ -47,7 +47,7 @@
 			class="absolute w-full h-full"
 			style="
         z-index: {index + 2};
-        backdrop-filter: blur({blurIntensity}px);
+        backdrop-filter: blur( calc({blurIntensity}px * var(--blur-amount, 1)) );
         mask: {mask};
       "
 		></div>
@@ -63,6 +63,6 @@
 	></div>
 	<div
 		class="absolute top-0 left-0 w-full h-full z-50"
-		style="background: linear-gradient({getGradientDirection()}, transparent 0%, {fadeTo} 100%);"
+		style="background: linear-gradient({getGradientDirection()}, transparent 0%, {fadeTo} 100%); opacity: var(--blur-amount, 1);"
 	></div>
 </div>

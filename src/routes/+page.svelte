@@ -63,49 +63,35 @@
 					img.onerror = async () => {
 						// resolve(new VertFile(f, to, converter));
 						const reader = new FileReader();
+						const file = new VertFile(f, to, converter);
+						resolve(file);
 						reader.onload = async (e) => {
-							try {
-								const tags = await new Promise<TagType>(
-									(resolve, reject) => {
-										jsmediatags.read(
-											new Blob([
-												new Uint8Array(
-													e.target
-														?.result as ArrayBuffer,
-												),
-											]),
-											{
-												onSuccess: (tag) =>
-													resolve(tag),
-												onError: (error) =>
-													reject(error),
-											},
-										);
-									},
-								);
-								console.log(tags);
-								const picture = tags.tags.picture;
-								if (!picture) {
-									resolve(new VertFile(f, to, converter));
-									return;
-								}
-								const blob = new Blob(
-									[new Uint8Array(picture.data)],
-									{
-										type: picture.format,
-									},
-								);
-								resolve(
-									new VertFile(
-										f,
-										to,
-										converter,
-										URL.createObjectURL(blob),
-									),
-								);
-							} catch {
-								resolve(new VertFile(f, to, converter));
-							}
+							const tags = await new Promise<TagType>(
+								(resolve, reject) => {
+									jsmediatags.read(
+										new Blob([
+											new Uint8Array(
+												e.target?.result as ArrayBuffer,
+											),
+										]),
+										{
+											onSuccess: (tag) => resolve(tag),
+											onError: (error) => reject(error),
+										},
+									);
+								},
+							);
+							const picture = tags.tags.picture;
+							if (!picture) return;
+
+							const blob = new Blob(
+								[new Uint8Array(picture.data)],
+								{
+									type: picture.format,
+								},
+							);
+							const url = URL.createObjectURL(blob);
+							file.blobUrl = url;
 						};
 						reader.readAsArrayBuffer(f);
 					};

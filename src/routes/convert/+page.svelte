@@ -13,6 +13,13 @@
 	import { ArrowRight, Disc2Icon, FileAudioIcon, XIcon } from "lucide-svelte";
 	import { onMount } from "svelte";
 	import { quintOut } from "svelte/easing";
+	import {
+		fade,
+		type EasingFunction,
+		type TransitionConfig,
+	} from "svelte/transition";
+
+	const { data } = $props();
 
 	const reversedFiles = $derived(files.files.slice().reverse());
 
@@ -130,6 +137,33 @@
 	const deleteAll = () => {
 		files.files = [];
 		goto("/");
+	};
+
+	export const progBlur = (
+		_: HTMLElement,
+		config:
+			| Partial<{
+					duration: number;
+					easing: EasingFunction;
+			  }>
+			| undefined,
+		dir: {
+			direction: "in" | "out" | "both";
+		},
+	): TransitionConfig => {
+		const prefersReducedMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
+		if (!config) config = {};
+		if (!config.duration) config.duration = 300;
+		if (!config.easing) config.easing = quintOut;
+		return {
+			duration: prefersReducedMotion ? 0 : config?.duration || 300,
+			css: (t) => {
+				return "--blur-amount: " + (dir.direction !== "in" ? t : 1 - t);
+			},
+			easing: config?.easing,
+		};
 	};
 </script>
 
@@ -279,7 +313,9 @@
 										)}
 										style="background-color: color-mix(in srgb, var(--{file.result
 											? 'accent-bg'
-											: 'bg'}), transparent var(--transparency)); backdrop-filter: blur(18px);"
+											: 'bg'}), transparent var(--transparency)); backdrop-filter: blur({data.isFirefox
+											? 0
+											: 18}px);"
 									>
 										<div
 											class="w-full grid grid-cols-1 grid-rows-1"
@@ -418,10 +454,23 @@
 									{#if file.blobUrl}
 										<div
 											class="bg-cover bg-center w-full h-full"
-											style="background-image: url({file.blobUrl});"
+											style="background-image: url({file.blobUrl})"
+											in:blur={{
+												blurMultiplier: 24,
+												scale: {
+													start: 1.1,
+													end: 1,
+												},
+												duration,
+												easing: quintOut,
+											}}
 										></div>
 										<div
 											class="absolute left-0 top-0 pt-[50px] h-full w-full"
+											transition:progBlur={{
+												duration,
+												easing: quintOut,
+											}}
 										>
 											<ProgressiveBlur
 												direction="bottom"
