@@ -17,7 +17,7 @@
 >
 	<div
 		class="h-full bg-accent-background dynadark:bg-accent-foreground absolute left-0 top-0"
-		class:percentless-animation={!progress}
+		class:percentless-animation={progress === null}
 		style={percent
 			? "width: {percent}%; transition: 500ms linear width;"
 			: ""}
