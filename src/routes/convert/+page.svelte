@@ -262,10 +262,10 @@
 							? 'var(--accent-bg)'
 							: 'var(--fg-muted-alt)'}; transition: border 1000ms ease; transition: filter {duration}ms var(--transition), transform {duration}ms var(--transition);"
 					>
-						<div
+						<!-- <div
 							class="absolute top-0 left-0 bg-red-500 h-full"
 							style="width: {file.progress}%; transition: width 500ms linear;"
-						></div>
+						></div> -->
 						<div
 							class="flex gap-8 sm:gap-0 sm:flex-row flex-col items-center justify-between w-full z-50 relative sm:h-fit h-full"
 						>
