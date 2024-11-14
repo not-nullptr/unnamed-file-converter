@@ -5,7 +5,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (theme !== "dark" && theme !== "light") {
 		event.cookies.set("theme", "", {
 			path: "/",
-			sameSite: "strict",
+			sameSite: "lax",
+			expires: new Date(2147483647 * 1000),
 		});
 		theme = "";
 	}
