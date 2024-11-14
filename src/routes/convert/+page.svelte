@@ -188,7 +188,7 @@
 								</div>
 							{:else}
 								<div
-									class="italic w-fit text-foreground-muted-alt h-11 flex items-center row-start-1 col-start-1"
+									class="italic w-fit text-foreground-muted-alt flex items-center row-start-1 col-start-1"
 									transition:blur={{
 										blurMultiplier: 8,
 										duration,
@@ -203,7 +203,7 @@
 					</div>
 				</div>
 
-				<div class="flex flex-row gap-3 mt-4">
+				<div class="grid gap-3 sm:grid-cols-3 mt-4">
 					<button
 						onclick={convertAll}
 						class={clsx("btn flex-grow", {
@@ -236,10 +236,7 @@
 					</button>
 				</div>
 			</div>
-			<div
-				class="w-full gap-4 grid"
-				style="grid-template-columns: repeat(2, 1fr)"
-			>
+			<div class="w-full gap-4 grid md:grid-cols-2">
 				{#each reversedFiles as file, i (file.id)}
 					{@const converter = (() => {
 						return converters.find((c) =>
@@ -247,7 +244,7 @@
 						);
 					})()}
 					<div
-						class="rounded-xl relative"
+						class="relative"
 						animate:flip={{ duration, easing: quintOut }}
 						out:blur={{
 							duration,
@@ -257,7 +254,7 @@
 					>
 						<div
 							class={clsx(
-								"py-0 px-3 flex relative flex-shrink-0 items-center w-full rounded-xl",
+								"py-0 px-3 flex relative flex-shrink-0 items-center w-full rounded-xl h-48",
 								{
 									"initial-fade": !finisheds[i],
 								},
@@ -301,7 +298,7 @@
 												if (files.files.length === 0)
 													goto("/");
 											}}
-											class="ml-2 mr-1 lg:block hidden flex-shrink-0"
+											class="ml-2 mr-1 flex-shrink-0"
 										>
 											<XIcon size="18" />
 										</button>
@@ -315,7 +312,7 @@
 									>
 										{#if processings[files.files.length - i - 1]}
 											<div
-												class="w-full lg:block hidden"
+												class="w-full"
 												transition:blur={{
 													blurMultiplier: 6,
 													duration,
@@ -329,9 +326,12 @@
 												<ProgressBar
 													min={0}
 													max={100}
-													progress={file.result
-														? 100
-														: file.progress}
+													progress={file.converter
+														?.reportsProgress
+														? file.result
+															? 100
+															: file.progress
+														: null}
 												/>
 											</div>
 										{/if}
@@ -339,10 +339,13 @@
 											class="flex items-center gap-3 w-full"
 										>
 											{#if converter && converter.supportedFormats.includes(file.from)}
-												<span class="whitespace-nowrap"
-													>Convert to</span
+												<span>from</span>
+												<span
+													class="py-2 px-3 font-display bg-foreground text-background rounded-xl"
+													>{file.from}</span
 												>
-												<div class="w-full">
+												<span>to</span>
+												<div class="inline-flex">
 													<Dropdown
 														options={converter.supportedFormats}
 														bind:selected={files
