@@ -147,7 +147,7 @@
 		</p>
 	{:else}
 		<div
-			class="flex flex-col gap-4 w-full items-center col-start-1 row-start-1"
+			class="flex flex-col gap-4 w-full col-start-1 row-start-1"
 			out:blur={{
 				duration,
 				easing: quintOut,
@@ -254,7 +254,7 @@
 					>
 						<div
 							class={clsx(
-								"flex relative flex-shrink-0 items-center w-full rounded-xl h-48",
+								"flex relative flex-shrink-0 items-center w-full rounded-xl h-32",
 								{
 									"initial-fade": !finisheds[i],
 								},
@@ -264,17 +264,13 @@
 								? 'var(--accent-bg)'
 								: 'var(--fg-muted-alt)'}; transition: border 1000ms ease; transition: filter {duration}ms var(--transition), transform {duration}ms var(--transition);"
 						>
-							<!-- <div
-							class="absolute top-0 left-0 bg-red-500 h-full"
-							style="width: {file.progress}%; transition: width 500ms linear;"
-						></div> -->
 							<div
-								class="flex gap-8 h-full justify-between flex-col items-center w-full z-50 relative"
+								class="flex h-full flex-col items-center w-full z-50 relative"
 							>
-								<div class="w-full">
+								<div class="w-full flex-shrink-0">
 									<div
 										class={clsx(
-											"py-3 px-4 justify-between w-full flex transition-colors duration-300 flex-shrink text-left border-b-2 border-solid border-foreground-muted-alt rounded-tl-[9px] rounded-tr-[9px] overflow-hidden",
+											"py-3 px-4 w-full flex transition-colors duration-300 flex-shrink text-left border-b-2 border-solid border-foreground-muted-alt rounded-tl-[9.5px] rounded-tr-[10px] overflow-hidden",
 											{
 												"bg-accent-background text-accent-foreground":
 													file.result,
@@ -283,11 +279,50 @@
 											},
 										)}
 									>
-										<h3
-											class="w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-96 font-medium"
+										<div
+											class="w-full grid grid-cols-1 grid-rows-"
 										>
-											{file.file.name}
-										</h3>
+											{#if processings[files.files.length - i - 1]}
+												<div
+													class="w-full row-start-1 col-start-1 h-full flex items-center pr-4"
+													transition:blur={{
+														blurMultiplier: 6,
+														duration,
+														easing: quintOut,
+														scale: {
+															start: 0.9,
+															end: 1,
+														},
+													}}
+												>
+													<ProgressBar
+														min={0}
+														max={100}
+														progress={file.converter
+															?.reportsProgress
+															? file.result
+																? 100
+																: file.progress
+															: null}
+													/>
+												</div>
+											{:else}
+												<h3
+													class="row-start-1 col-start-1 whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+													transition:blur={{
+														blurMultiplier: 6,
+														duration,
+														easing: quintOut,
+														scale: {
+															start: 0.9,
+															end: 1,
+														},
+													}}
+												>
+													{file.file.name}
+												</h3>
+											{/if}
+										</div>
 										<button
 											onclick={() => {
 												// delete the file from the list
@@ -305,38 +340,13 @@
 									</div>
 								</div>
 								<div
-									class="flex items-center gap-3 justify-normal flex-shrink-0 w-full"
+									class="flex items-center gap-3 justify-normal flex-grow w-full h-full"
 								>
 									<div
 										class="flex flex-col items-center gap-3 w-full"
 									>
-										{#if processings[files.files.length - i - 1]}
-											<div
-												class="w-full px-4"
-												transition:blur={{
-													blurMultiplier: 6,
-													duration,
-													easing: quintOut,
-													scale: {
-														start: 0.9,
-														end: 1,
-													},
-												}}
-											>
-												<ProgressBar
-													min={0}
-													max={100}
-													progress={file.converter
-														?.reportsProgress
-														? file.result
-															? 100
-															: file.progress
-														: null}
-												/>
-											</div>
-										{/if}
 										<div
-											class="flex items-center gap-3 w-full py-4 px-5"
+											class="flex items-center gap-3 w-full h-full px-5"
 										>
 											{#if converter && converter.supportedFormats.includes(file.from)}
 												<span>from</span>
@@ -405,7 +415,7 @@
 										class="absolute left-0 bottom-0 h-5/6 w-full"
 									>
 										<ProgressiveBlur
-											direction={"bottom"}
+											direction="left"
 											endIntensity={64}
 											iterations={6}
 											fadeTo="var(--bg-transparent)"
@@ -417,7 +427,6 @@
 					</div>
 				{/each}
 			</div>
-			<div class="w-full h-4 flex-shrink-0"></div>
 		</div>
 	{/if}
 </div>

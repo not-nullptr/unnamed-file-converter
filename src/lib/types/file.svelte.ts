@@ -50,6 +50,9 @@ export class VertFile {
 		const a = document.createElement("a");
 		a.href = blob;
 		a.download = `VERT-Converted_${new Date().toISOString()}${this.to}`;
+		// force it to not open in a new tab
+		a.target = "_blank";
+		a.style.display = "none";
 		a.click();
 		URL.revokeObjectURL(blob);
 		a.remove();
