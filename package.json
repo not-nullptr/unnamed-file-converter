@@ -16,6 +16,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@types/eslint": "^9.6.0",
+		"@types/js-cookie": "^3.0.6",
 		"autoprefixer": "^10.4.20",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
@@ -40,9 +41,9 @@
 		"@imagemagick/magick-wasm": "^0.0.31",
 		"client-zip": "^2.4.5",
 		"clsx": "^2.1.1",
+		"js-cookie": "^3.0.5",
 		"lucide-svelte": "^0.456.0",
 		"svelte-adapter-bun": "^0.5.2",
-		"typescript-cookie": "^1.0.6",
 		"wasm-vips": "^0.0.11"
 	}
 }
