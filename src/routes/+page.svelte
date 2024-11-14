@@ -2,9 +2,9 @@
 	import { goto } from "$app/navigation";
 	import Uploader from "$lib/components/functional/Uploader.svelte";
 	import { converters } from "$lib/converters";
-	import { log } from "$lib/logger/index.js";
+	import { log } from "$lib/logger";
 	import { files } from "$lib/store/index.svelte";
-	import { VertFile } from "$lib/types/file.svelte.js";
+	import { VertFile } from "$lib/types/file.svelte";
 	import { Check } from "lucide-svelte";
 
 	const { data } = $props();
@@ -48,6 +48,7 @@
 									new VertFile(
 										f,
 										to,
+										converter,
 										URL.createObjectURL(blob!),
 									),
 								);
@@ -58,7 +59,7 @@
 					};
 
 					img.onerror = async () => {
-						resolve(new VertFile(f, to));
+						resolve(new VertFile(f, to, converter));
 					};
 				},
 			);

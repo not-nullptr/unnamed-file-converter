@@ -41,15 +41,21 @@ export class VipsConverter extends Converter {
 
 	public async convert(input: VertFile, to: string): Promise<VertFile> {
 		log(["converters", this.name], `converting ${input.name} to ${to}`);
-		const res = await this.sendMessage({
+		const msg = {
 			type: "convert",
-			input,
+			input: {
+				file: input.file,
+				name: input.name,
+				to: input.to,
+				from: input.from,
+			},
 			to,
-		});
+		} as WorkerMessage;
+		const res = await this.sendMessage(msg);
 
 		if (res.type === "finished") {
 			log(["converters", this.name], `converted ${input.name} to ${to}`);
-			return res.output;
+			return new VertFile(new File([res.output], input.name), to);
 		}
 
 		if (res.type === "error") {
@@ -81,8 +87,13 @@ export class VipsConverter extends Converter {
 			}, 60000);
 
 			this.worker.addEventListener("message", onMessage);
-
-			this.worker.postMessage({ ...message, id });
+			const msg = { ...message, id, worker: null };
+			log(["converters", this.name], `sending message`, msg);
+			try {
+				this.worker.postMessage(msg);
+			} catch (e) {
+				console.error(e);
+			}
 		});
 	}
 }

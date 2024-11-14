@@ -1,8 +1,4 @@
-import {
-	type WorkerMessage,
-	type OmitBetterStrict,
-	VertFile,
-} from "$lib/types";
+import { type WorkerMessage, type OmitBetterStrict } from "$lib/types";
 import Vips from "wasm-vips";
 
 const vipsPromise = Vips({
@@ -32,10 +28,7 @@ const handleMessage = async (
 			image.delete();
 			return {
 				type: "finished",
-				output: new VertFile(
-					new File([output.buffer], message.input.name),
-					message.to,
-				),
+				output: output.buffer,
 			};
 		}
 	}

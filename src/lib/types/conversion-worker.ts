@@ -8,7 +8,7 @@ interface ConvertMessage {
 
 interface FinishedMessage {
 	type: "finished";
-	output: VertFile;
+	output: ArrayBufferLike;
 }
 
 interface LoadedMessage {
