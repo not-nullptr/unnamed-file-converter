@@ -254,7 +254,7 @@
 					>
 						<div
 							class={clsx(
-								"py-0 px-3 flex relative flex-shrink-0 items-center w-full rounded-xl h-48",
+								"flex relative flex-shrink-0 items-center w-full rounded-xl h-48",
 								{
 									"initial-fade": !finisheds[i],
 								},
@@ -269,12 +269,12 @@
 							style="width: {file.progress}%; transition: width 500ms linear;"
 						></div> -->
 							<div
-								class="flex gap-8 flex-grow h-full py-4 justify-normal flex-col items-center w-full z-50 relative"
+								class="flex gap-8 h-full justify-between flex-col items-center w-full z-50 relative"
 							>
-								<div class="w-full flex-grow">
+								<div class="w-full">
 									<div
 										class={clsx(
-											"py-2 px-3 justify-between w-full flex rounded-xl transition-colors duration-300 flex-shrink text-left",
+											"py-3 px-4 justify-between w-full flex transition-colors duration-300 flex-shrink text-left border-b-2 border-solid border-foreground-muted-alt rounded-tl-[9px] rounded-tr-[9px] overflow-hidden",
 											{
 												"bg-accent-background text-accent-foreground":
 													file.result,
@@ -284,7 +284,7 @@
 										)}
 									>
 										<h3
-											class="flex-grow w-full flex-shrink whitespace-nowrap overflow-hidden text-ellipsis max-w-96"
+											class="w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-96 font-medium"
 										>
 											{file.file.name}
 										</h3>
@@ -300,7 +300,7 @@
 											}}
 											class="ml-2 mr-1 flex-shrink-0"
 										>
-											<XIcon size="18" />
+											<XIcon size="24" />
 										</button>
 									</div>
 								</div>
@@ -312,7 +312,7 @@
 									>
 										{#if processings[files.files.length - i - 1]}
 											<div
-												class="w-full"
+												class="w-full px-4"
 												transition:blur={{
 													blurMultiplier: 6,
 													duration,
@@ -336,7 +336,7 @@
 											</div>
 										{/if}
 										<div
-											class="flex items-center gap-3 w-full"
+											class="flex items-center gap-3 w-full py-4 px-5"
 										>
 											{#if converter && converter.supportedFormats.includes(file.from)}
 												<span>from</span>
@@ -395,7 +395,7 @@
 							{#if converter && converter.supportedFormats.includes(file.from)}
 								<!-- god knows why, but setting opacity > 0.98 causes a z-ordering issue in firefox ??? -->
 								<div
-									class="absolute top-0 -z-50 left-0 w-full h-full rounded-[10px] overflow-hidden opacity-[0.98]"
+									class="absolute top-0 -z-50 left-0 w-full h-full opacity-[0.98] rounded-[9px] overflow-hidden"
 								>
 									<div
 										class="bg-cover bg-center w-full h-full"
