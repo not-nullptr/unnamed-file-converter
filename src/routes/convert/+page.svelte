@@ -10,7 +10,7 @@
 	import { files } from "$lib/store/index.svelte";
 	import type { VertFile } from "$lib/types";
 	import clsx from "clsx";
-	import { ArrowRight, XIcon } from "lucide-svelte";
+	import { ArrowRight, Disc2Icon, FileAudioIcon, XIcon } from "lucide-svelte";
 	import { onMount } from "svelte";
 	import { quintOut } from "svelte/easing";
 
@@ -254,7 +254,7 @@
 					>
 						<div
 							class={clsx(
-								"flex relative flex-shrink-0 items-center w-full rounded-xl h-32",
+								"flex relative flex-shrink-0 items-center w-full rounded-xl h-72",
 								{
 									"initial-fade": !finisheds[i],
 								},
@@ -270,17 +270,19 @@
 								<div class="w-full flex-shrink-0">
 									<div
 										class={clsx(
-											"py-3 px-4 w-full flex transition-colors duration-300 flex-shrink text-left border-b-2 border-solid border-foreground-muted-alt rounded-tl-[9.5px] rounded-tr-[10px] overflow-hidden",
+											"py-3 dynadark:[--transparency:50%] [--transparency:25%] px-4 w-full flex transition-colors duration-300 flex-shrink text-left border-b-2 border-solid border-foreground-muted-alt rounded-tl-[9.5px] rounded-tr-[10px] overflow-hidden",
 											{
-												"bg-accent-background text-accent-foreground":
+												"text-accent-foreground":
 													file.result,
-												"bg-background text-foreground":
-													!file.result,
+												"text-foreground": !file.result,
 											},
 										)}
+										style="background-color: color-mix(in srgb, var(--{file.result
+											? 'accent-bg'
+											: 'bg'}), transparent var(--transparency)); backdrop-filter: blur(18px);"
 									>
 										<div
-											class="w-full grid grid-cols-1 grid-rows-"
+											class="w-full grid grid-cols-1 grid-rows-1"
 										>
 											{#if processings[files.files.length - i - 1]}
 												<div
@@ -340,47 +342,53 @@
 									</div>
 								</div>
 								<div
-									class="flex items-center gap-3 justify-normal flex-grow w-full h-full"
+									class="flex gap-3 justify-normal flex-grow w-full h-full"
 								>
 									<div
-										class="flex flex-col items-center gap-3 w-full"
+										class="flex flex-col items-end gap-3 w-full"
 									>
 										<div
-											class="flex items-center gap-3 w-full h-full px-5"
+											class="flex items-end gap-3 w-full h-full px-5"
 										>
-											{#if converter && converter.supportedFormats.includes(file.from)}
-												<span>from</span>
-												<span
-													class="py-2 px-3 font-display bg-foreground text-background rounded-xl"
-													>{file.from}</span
-												>
-												<span>to</span>
-												<div class="inline-flex">
-													<Dropdown
-														options={converter.supportedFormats}
-														bind:selected={files
-															.files[
-															files.files.length -
-																i -
-																1
-														].to}
-														onselect={() => {
-															file.result = null;
-														}}
-													/>
-												</div>
-											{:else}
-												<span
-													class="py-2 px-3 font-display bg-foreground-failure text-white rounded-xl"
-													>{file.from}</span
-												>
+											<div
+												class="flex items-center justify-center gap-3 w-full pb-4"
+											>
+												{#if converter && converter.supportedFormats.includes(file.from)}
+													<span>from</span>
+													<span
+														class="py-2 px-3 font-display bg-foreground text-background rounded-xl"
+														>{file.from}</span
+													>
+													<span>to</span>
+													<div class="inline-flex">
+														<Dropdown
+															options={converter.supportedFormats}
+															bind:selected={files
+																.files[
+																files.files
+																	.length -
+																	i -
+																	1
+															].to}
+															onselect={() => {
+																file.result =
+																	null;
+															}}
+														/>
+													</div>
+												{:else}
+													<span
+														class="py-2 px-3 font-display bg-foreground-failure text-white rounded-xl"
+														>{file.from}</span
+													>
 
-												<span
-													class="text-foreground-failure"
-												>
-													is not supported!
-												</span>
-											{/if}
+													<span
+														class="text-foreground-failure"
+													>
+														is not supported!
+													</span>
+												{/if}
+											</div>
 										</div>
 										<!-- <div
 											class="hidden lg:flex gap-4 w-full"
@@ -405,22 +413,35 @@
 							{#if converter && converter.supportedFormats.includes(file.from)}
 								<!-- god knows why, but setting opacity > 0.98 causes a z-ordering issue in firefox ??? -->
 								<div
-									class="absolute top-0 -z-50 left-0 w-full h-full opacity-[0.98] rounded-[9px] overflow-hidden"
+									class="absolute top-[0px] -z-50 left-0 w-full h-full opacity-[0.98] rounded-xl overflow-hidden"
 								>
-									<div
-										class="bg-cover bg-center w-full h-full"
-										style="background-image: url({file.blobUrl});"
-									></div>
-									<div
-										class="absolute left-0 bottom-0 h-5/6 w-full"
-									>
-										<ProgressiveBlur
-											direction="left"
-											endIntensity={64}
-											iterations={6}
-											fadeTo="var(--bg-transparent)"
-										/>
-									</div>
+									{#if file.blobUrl}
+										<div
+											class="bg-cover bg-center w-full h-full"
+											style="background-image: url({file.blobUrl});"
+										></div>
+										<div
+											class="absolute left-0 top-0 pt-[50px] h-full w-full"
+										>
+											<ProgressiveBlur
+												direction="bottom"
+												endIntensity={64}
+												iterations={8}
+												fadeTo="var(--bg-transparent)"
+											/>
+										</div>
+									{:else}
+										<div
+											class="w-full h-full flex items-center justify-center"
+										>
+											<FileAudioIcon
+												size="96"
+												strokeWidth="1.5"
+												color="var(--fg)"
+												opacity="0.9"
+											/>
+										</div>
+									{/if}
 								</div>
 							{/if}
 						</div>

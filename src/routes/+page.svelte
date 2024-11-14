@@ -6,6 +6,8 @@
 	import { files } from "$lib/store/index.svelte";
 	import { VertFile } from "$lib/types/file.svelte";
 	import { Check } from "lucide-svelte";
+	import jsmediatags from "jsmediatags";
+	import type { TagType } from "jsmediatags/types/index.js";
 
 	const { data } = $props();
 
@@ -59,7 +61,53 @@
 					};
 
 					img.onerror = async () => {
-						resolve(new VertFile(f, to, converter));
+						// resolve(new VertFile(f, to, converter));
+						const reader = new FileReader();
+						reader.onload = async (e) => {
+							try {
+								const tags = await new Promise<TagType>(
+									(resolve, reject) => {
+										jsmediatags.read(
+											new Blob([
+												new Uint8Array(
+													e.target
+														?.result as ArrayBuffer,
+												),
+											]),
+											{
+												onSuccess: (tag) =>
+													resolve(tag),
+												onError: (error) =>
+													reject(error),
+											},
+										);
+									},
+								);
+								console.log(tags);
+								const picture = tags.tags.picture;
+								if (!picture) {
+									resolve(new VertFile(f, to, converter));
+									return;
+								}
+								const blob = new Blob(
+									[new Uint8Array(picture.data)],
+									{
+										type: picture.format,
+									},
+								);
+								resolve(
+									new VertFile(
+										f,
+										to,
+										converter,
+										URL.createObjectURL(blob),
+									),
+								);
+							} catch {
+								resolve(new VertFile(f, to, converter));
+							}
+						};
+						reader.readAsArrayBuffer(f);
 					};
 				},
 			);

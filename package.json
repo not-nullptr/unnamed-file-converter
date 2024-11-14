@@ -17,6 +17,7 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@types/eslint": "^9.6.0",
 		"@types/js-cookie": "^3.0.6",
+		"@types/jsmediatags": "^3.9.6",
 		"autoprefixer": "^10.4.20",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
@@ -42,8 +43,12 @@
 		"client-zip": "^2.4.5",
 		"clsx": "^2.1.1",
 		"js-cookie": "^3.0.5",
+		"jsmediatags": "^3.9.7",
 		"lucide-svelte": "^0.456.0",
 		"svelte-adapter-bun": "^0.5.2",
 		"wasm-vips": "^0.0.11"
+	},
+	"patchedDependencies": {
+		"jsmediatags@3.9.7": "patches/jsmediatags@3.9.7.patch"
 	}
 }
