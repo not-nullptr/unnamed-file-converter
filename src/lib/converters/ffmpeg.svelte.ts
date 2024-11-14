@@ -37,7 +37,6 @@ export class FFmpegConverter extends Converter {
 				coreURL: `${baseURL}/ffmpeg-core.js`,
 				wasmURL: `${baseURL}/ffmpeg-core.wasm`,
 			});
-
 			this.ready = true;
 		})();
 	}
@@ -47,13 +46,21 @@ export class FFmpegConverter extends Converter {
 		to: string,
 	): Promise<IFile> {
 		if (!to.startsWith(".")) to = `.${to}`;
-		// clone input.buffer
 		const buf = new Uint8Array(input.buffer);
 		await this.ffmpeg.writeFile("input", buf);
+		log(
+			["converters", this.name],
+			`wrote ${input.name} to ffmpeg virtual fs`,
+		);
 		await this.ffmpeg.exec(["-i", "input", "output" + to]);
+		log(["converters", this.name], `executed ffmpeg command`);
 		const output = (await this.ffmpeg.readFile(
 			"output" + to,
 		)) as unknown as Uint8Array;
+		log(
+			["converters", this.name],
+			`read ${input.name.split(".").slice(0, -1).join(".") + to} from ffmpeg virtual fs`,
+		);
 		return {
 			...input,
 			buffer: output.buffer,

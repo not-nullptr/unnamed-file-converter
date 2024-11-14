@@ -2,6 +2,7 @@
 	import { goto } from "$app/navigation";
 	import Uploader from "$lib/components/functional/Uploader.svelte";
 	import { converters } from "$lib/converters";
+	import { log } from "$lib/logger/index.js";
 	import { files } from "$lib/store/index.svelte";
 	import { Check } from "lucide-svelte";
 
@@ -22,8 +23,10 @@
 					const to =
 						converter?.supportedFormats.find((f) => f !== from) ||
 						converters[0].supportedFormats[0];
-					// create a canvas and clamp the width or height to 1024, whichever is larger
-					// also, maintain aspect ratio
+					log(
+						["uploader", "converter"],
+						`converting ${from} to ${to} using ${converter?.name || "... no converter??"}`,
+					);
 					const canvas = document.createElement("canvas");
 					const ctx = canvas.getContext("2d");
 					const img = new Image();
@@ -68,13 +71,15 @@
 				},
 			);
 		});
+		let oldLen = files.files.length;
 		files.files = [
 			...files.files,
 			...(await Promise.all(newFilePromises)).filter(
 				(f) => typeof f !== "undefined",
 			),
 		];
-
+		let newLen = files.files.length;
+		log(["uploader"], `handled ${newLen - oldLen} files`);
 		ourFiles = [];
 
 		if (files.files.length > 0 && !files.beenToConverterPage)

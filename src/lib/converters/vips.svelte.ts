@@ -43,6 +43,7 @@ export class VipsConverter extends Converter {
 		input: OmitBetterStrict<IFile, "extension">,
 		to: string,
 	): Promise<IFile> {
+		log(["converters", this.name], `converting ${input.name} to ${to}`);
 		const res = await this.sendMessage({
 			type: "convert",
 			input: input as unknown as IFile,
@@ -50,6 +51,7 @@ export class VipsConverter extends Converter {
 		});
 
 		if (res.type === "finished") {
+			log(["converters", this.name], `converted ${input.name} to ${to}`);
 			return res.output;
 		}
 
