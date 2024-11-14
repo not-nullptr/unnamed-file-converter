@@ -77,7 +77,7 @@
 		for (let i = 0; i < files.files.length; i++) {
 			promises.push(
 				(async (i) => {
-					await convert(files.files[i]);
+					await convert(files.files[i], i);
 				})(i),
 			);
 		}
@@ -88,9 +88,8 @@
 		log(["converter"], `converted all files in ${seconds}s`);
 	};
 
-	const convert = async (file: VertFile) => {
+	const convert = async (file: VertFile, index: number) => {
 		file.progress = 0;
-		const index = files.files.findIndex((f) => f === file);
 		processings[index] = true;
 		await file.convert();
 		processings[index] = false;
@@ -236,8 +235,8 @@
 				</div>
 			</div>
 			<div
-				class="w-full lg:grid flex flex-col lg:gap-8 gap-4"
-				style="grid-template-columns: 1fr 1fr;"
+				class="w-full flex flex-col gap-4 lg:grid"
+				style="grid-template-columns: repeat(2, 1fr)"
 			>
 				{#each reversedFiles as file, i (file.id)}
 					{@const converter = (() => {
@@ -246,7 +245,7 @@
 						);
 					})()}
 					<div
-						class="w-full rounded-xl relative lg:h-48"
+						class="rounded-xl relative lg:h-48"
 						animate:flip={{ duration, easing: quintOut }}
 						out:blur={{
 							duration,
@@ -287,7 +286,7 @@
 										)}
 									>
 										<h3
-											class="lg:flex-grow flex-shrink whitespace-nowrap overflow-hidden text-ellipsis sm:max-w-96 lg:max-w-none"
+											class="lg:flex-grow flex-shrink whitespace-nowrap overflow-hidden text-ellipsis sm:max-w-96"
 										>
 											{file.file.name}
 										</h3>
@@ -313,7 +312,7 @@
 									<div
 										class="flex flex-col items-center gap-3 w-full"
 									>
-										{#if processings[i]}
+										{#if processings[files.files.length - i - 1]}
 											<div
 												class="w-full lg:block hidden"
 												transition:blur={{
