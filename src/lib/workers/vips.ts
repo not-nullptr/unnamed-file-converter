@@ -1,4 +1,8 @@
-import type { WorkerMessage, OmitBetterStrict } from "$lib/types";
+import {
+	type WorkerMessage,
+	type OmitBetterStrict,
+	VertFile,
+} from "$lib/types";
 import Vips from "wasm-vips";
 
 const vipsPromise = Vips({
@@ -21,16 +25,17 @@ const handleMessage = async (
 	switch (message.type) {
 		case "convert": {
 			if (!message.to.startsWith(".")) message.to = `.${message.to}`;
-			const image = vips.Image.newFromBuffer(message.input.buffer);
+			const image = vips.Image.newFromBuffer(
+				await message.input.file.arrayBuffer(),
+			);
 			const output = image.writeToBuffer(message.to);
 			image.delete();
 			return {
 				type: "finished",
-				output: {
-					...message.input,
-					buffer: output.buffer,
-					extension: message.to,
-				},
+				output: new VertFile(
+					new File([output.buffer], message.input.name),
+					message.to,
+				),
 			};
 		}
 	}

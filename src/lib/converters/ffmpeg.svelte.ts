@@ -1,6 +1,5 @@
-import type { IFile } from "$lib/types";
+import { VertFile } from "$lib/types";
 import { Converter } from "./converter.svelte";
-import type { OmitBetterStrict } from "$lib/types";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { browser } from "$app/environment";
 import { log } from "$lib/logger";
@@ -42,19 +41,23 @@ export class FFmpegConverter extends Converter {
 		})();
 	}
 
-	public async convert(
-		input: OmitBetterStrict<IFile, "extension">,
-		to: string,
-	): Promise<IFile> {
+	public async convert(input: VertFile, to: string): Promise<VertFile> {
 		if (!to.startsWith(".")) to = `.${to}`;
 		const ffmpeg = new FFmpeg();
+		ffmpeg.on("progress", (progress) => {
+			log(
+				["converters", this.name],
+				`progress for "${input.name}": ${progress.progress * 100}%`,
+			);
+			input.progress = progress.progress * 100;
+		});
 		const baseURL =
 			"https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm";
 		await ffmpeg.load({
 			coreURL: `${baseURL}/ffmpeg-core.js`,
 			wasmURL: `${baseURL}/ffmpeg-core.wasm`,
 		});
-		const buf = new Uint8Array(input.buffer);
+		const buf = new Uint8Array(await input.file.arrayBuffer());
 		await ffmpeg.writeFile("input", buf);
 		log(
 			["converters", this.name],
@@ -70,10 +73,6 @@ export class FFmpegConverter extends Converter {
 			`read ${input.name.split(".").slice(0, -1).join(".") + to} from ffmpeg virtual fs`,
 		);
 		ffmpeg.terminate();
-		return {
-			...input,
-			buffer: output.buffer,
-			extension: to,
-		};
+		return new VertFile(new File([output], input.name), to);
 	}
 }

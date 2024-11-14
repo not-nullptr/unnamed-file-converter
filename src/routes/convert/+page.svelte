@@ -81,25 +81,8 @@
 					if (!converter) throw new Error("No converter found");
 					const to = file.to;
 					processings[i] = true;
-					const converted = await converter.convert(
-						{
-							name: file.file.name,
-							buffer: await file.file.arrayBuffer(),
-						},
-						to,
-					);
-					files.files[i] = {
-						...file,
-						result: {
-							...converted,
-							blobUrl: URL.createObjectURL(
-								new Blob([converted.buffer], {
-									type: file.file.type,
-								}),
-							),
-							animating: true,
-						},
-					};
+					const converted = await converter.convert(file, to);
+					file.result = converted;
 					processings[i] = false;
 				})(),
 			);
@@ -123,7 +106,7 @@
 			dlFiles.push({
 				name: file.file.name.replace(/\.[^/.]+$/, "") + file.to,
 				lastModified: Date.now(),
-				input: result.buffer,
+				input: await result.file.arrayBuffer(),
 			});
 		}
 		if (files.files.length === 0) return;
@@ -257,7 +240,7 @@
 					);
 				})()}
 				<div
-					class="w-full rounded-xl"
+					class="w-full rounded-xl relative"
 					animate:flip={{ duration, easing: quintOut }}
 					out:blur={{
 						duration,
@@ -267,7 +250,7 @@
 				>
 					<div
 						class={clsx(
-							"sm:h-16 sm:py-0 py-4 px-3 flex relative flex-shrink-0 items-center w-full rounded-xl",
+							"sm:h-16 sm:py-0 py-4 px-3 flex relative overflow-hidden flex-shrink-0 items-center w-full rounded-xl",
 							{
 								"initial-fade": !finisheds[i],
 								processing:
@@ -279,6 +262,10 @@
 							? 'var(--accent-bg)'
 							: 'var(--fg-muted-alt)'}; transition: border 1000ms ease; transition: filter {duration}ms var(--transition), transform {duration}ms var(--transition);"
 					>
+						<div
+							class="absolute top-0 left-0 bg-red-500 h-full"
+							style="width: {file.progress}%; transition: width 500ms linear;"
+						></div>
 						<div
 							class="flex gap-8 sm:gap-0 sm:flex-row flex-col items-center justify-between w-full z-50 relative sm:h-fit h-full"
 						>

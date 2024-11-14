@@ -1,17 +1,8 @@
 import { log } from "$lib/logger";
-import type { IFile } from "$lib/types";
+import { VertFile } from "$lib/types";
 
 class Files {
-	public files = $state<
-		{
-			file: File;
-			from: string;
-			to: string;
-			blobUrl: string;
-			id: string;
-			result?: (IFile & { blobUrl: string; animating: boolean }) | null;
-		}[]
-	>([]);
+	public files = $state<VertFile[]>([]);
 }
 
 class Theme {

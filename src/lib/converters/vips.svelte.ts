@@ -1,4 +1,4 @@
-import type { IFile } from "$lib/types";
+import { VertFile } from "$lib/types";
 import { Converter } from "./converter.svelte";
 import VipsWorker from "$lib/workers/vips?worker";
 import { browser } from "$app/environment";
@@ -39,14 +39,11 @@ export class VipsConverter extends Converter {
 		};
 	}
 
-	public async convert(
-		input: OmitBetterStrict<IFile, "extension">,
-		to: string,
-	): Promise<IFile> {
+	public async convert(input: VertFile, to: string): Promise<VertFile> {
 		log(["converters", this.name], `converting ${input.name} to ${to}`);
 		const res = await this.sendMessage({
 			type: "convert",
-			input: input as unknown as IFile,
+			input,
 			to,
 		});
 

@@ -4,6 +4,7 @@
 	import { converters } from "$lib/converters";
 	import { log } from "$lib/logger/index.js";
 	import { files } from "$lib/store/index.svelte";
+	import { VertFile } from "$lib/types/file.svelte.js";
 	import { Check } from "lucide-svelte";
 
 	const { data } = $props();
@@ -42,31 +43,58 @@
 						ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
 						// get the blob
 						canvas.toBlob(
-							(blob) => {
-								resolve({
-									file: f,
-									from,
-									to,
-									blobUrl:
-										blob === null
-											? ""
-											: URL.createObjectURL(blob),
-									id: Math.random().toString(36).substring(2),
-								});
+							async (blob) => {
+								// resolve({
+								// 	file: f,
+								// 	from,
+								// 	to,
+								// 	blobUrl:
+								// 		blob === null
+								// 			? ""
+								// 			: URL.createObjectURL(blob),
+								// 	id: Math.random().toString(36).substring(2),
+								// 	buffer: await f.arrayBuffer(),
+								// 	extension: from,
+								// 	name: f.name,
+								// 	result: null,
+								// 	progress: 0,
+								// });
+								resolve(
+									new VertFile(
+										new File([blob!], f.name, {
+											type: blob!.type,
+										}),
+										to,
+										URL.createObjectURL(blob!),
+									),
+								);
 							},
 							"image/jpeg",
 							0.75,
 						);
 					};
 
-					img.onerror = () => {
-						resolve({
-							file: f,
-							from,
-							to,
-							blobUrl: "",
-							id: Math.random().toString(36).substring(2),
-						});
+					img.onerror = async () => {
+						// resolve({
+						// 	file: f,
+						// 	from,
+						// 	to,
+						// 	blobUrl: "",
+						// 	id: Math.random().toString(36).substring(2),
+						// 	name: f.name,
+						// 	buffer: await f.arrayBuffer(),
+						// 	extension: from,
+						// 	result: null,
+						// 	progress: 0,
+						// });
+						resolve(
+							new VertFile(
+								new File([await f.arrayBuffer()], f.name, {
+									type: f.type,
+								}),
+								to,
+							),
+						);
 					};
 				},
 			);
