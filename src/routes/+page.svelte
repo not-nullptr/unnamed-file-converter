@@ -82,8 +82,7 @@
 		log(["uploader"], `handled ${newLen - oldLen} files`);
 		ourFiles = [];
 
-		if (files.files.length > 0 && !files.beenToConverterPage)
-			goto("/convert");
+		if (files.files.length > 0) goto("/convert");
 	};
 </script>
 

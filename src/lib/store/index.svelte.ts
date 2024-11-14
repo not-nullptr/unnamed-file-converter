@@ -12,10 +12,6 @@ class Files {
 			result?: (IFile & { blobUrl: string; animating: boolean }) | null;
 		}[]
 	>([]);
-	public beenToConverterPage = $state(false);
-	public shouldShowAlert = $derived(
-		!this.beenToConverterPage && this.files.length > 0,
-	);
 }
 
 class Theme {
