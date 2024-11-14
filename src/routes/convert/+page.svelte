@@ -20,9 +20,6 @@
 		Array.from({ length: files.files.length }, () => false),
 	);
 
-	let isSm = $state(false);
-	let isLg = $state(false);
-
 	let processings = $state<boolean[]>([]);
 
 	const convertersRequired = $derived.by(() => {
@@ -49,15 +46,6 @@
 	const allConvertersReady = $derived(
 		convertersRequired.every((c) => c.ready),
 	);
-
-	onMount(() => {
-		isSm = window.innerWidth < 640;
-		isLg = window.innerWidth > 1024;
-		window.addEventListener("resize", () => {
-			isSm = window.innerWidth < 640;
-			isLg = window.innerWidth > 1024;
-		});
-	});
 
 	let disabled = $derived(files.files.some((f) => !f.result));
 
@@ -215,7 +203,7 @@
 					</div>
 				</div>
 
-				<div class="flex sm:flex-row flex-col gap-3 mt-4">
+				<div class="flex flex-row gap-3 mt-4">
 					<button
 						onclick={convertAll}
 						class={clsx("btn flex-grow", {
@@ -249,7 +237,7 @@
 				</div>
 			</div>
 			<div
-				class="w-full flex flex-col gap-4 lg:grid"
+				class="w-full gap-4 grid"
 				style="grid-template-columns: repeat(2, 1fr)"
 			>
 				{#each reversedFiles as file, i (file.id)}
@@ -259,7 +247,7 @@
 						);
 					})()}
 					<div
-						class="rounded-xl relative lg:h-48"
+						class="rounded-xl relative"
 						animate:flip={{ duration, easing: quintOut }}
 						out:blur={{
 							duration,
@@ -269,10 +257,9 @@
 					>
 						<div
 							class={clsx(
-								"sm:h-full lg:py-0 py-4 px-3 flex relative flex-shrink-0 items-center w-full rounded-xl",
+								"py-0 px-3 flex relative flex-shrink-0 items-center w-full rounded-xl",
 								{
 									"initial-fade": !finisheds[i],
-									processing: processings[i] && !isLg,
 								},
 							)}
 							style="--delay: {i * 50}ms; z-index: {files.files
@@ -285,12 +272,12 @@
 							style="width: {file.progress}%; transition: width 500ms linear;"
 						></div> -->
 							<div
-								class="flex gap-8 lg:flex-grow lg:h-full sm:gap-0 lg:py-4 lg:justify-normal sm:flex-row lg:flex-col flex-col items-center justify-between w-full z-50 relative sm:h-fit h-full"
+								class="flex gap-8 flex-grow h-full py-4 justify-normal flex-col items-center w-full z-50 relative"
 							>
-								<div class="w-full lg:flex-grow">
+								<div class="w-full flex-grow">
 									<div
 										class={clsx(
-											"py-2 px-3 lg:justify-between lg:w-full lg:flex rounded-xl transition-colors duration-300 sm:w-fit w-full flex-shrink sm:text-left text-center",
+											"py-2 px-3 justify-between w-full flex rounded-xl transition-colors duration-300 flex-shrink text-left",
 											{
 												"bg-accent-background text-accent-foreground":
 													file.result,
@@ -300,7 +287,7 @@
 										)}
 									>
 										<h3
-											class="lg:flex-grow lg:w-full flex-shrink whitespace-nowrap overflow-hidden text-ellipsis sm:max-w-96"
+											class="flex-grow w-full flex-shrink whitespace-nowrap overflow-hidden text-ellipsis max-w-96"
 										>
 											{file.file.name}
 										</h3>
@@ -321,7 +308,7 @@
 									</div>
 								</div>
 								<div
-									class="flex items-center gap-3 sm:justify-normal w-full sm:w-fit flex-shrink-0 lg:w-full"
+									class="flex items-center gap-3 justify-normal flex-shrink-0 w-full"
 								>
 									<div
 										class="flex flex-col items-center gap-3 w-full"
@@ -352,25 +339,10 @@
 											class="flex items-center gap-3 w-full"
 										>
 											{#if converter && converter.supportedFormats.includes(file.from)}
-												<span
-													class="sm:block hidden lg:hidden"
-													>from</span
-												>
-												<span
-													class="py-2 lg:hidden px-3 font-display bg-foreground text-background rounded-xl sm:block hidden"
-													>{file.from}</span
-												>
-												<span
-													class="sm:block lg:hidden hidden"
-													>to</span
-												>
-												<span
-													class="hidden lg:block whitespace-nowrap"
+												<span class="whitespace-nowrap"
 													>Convert to</span
 												>
-												<div
-													class="sm:block hidden lg:w-full"
-												>
+												<div class="w-full">
 													<Dropdown
 														options={converter.supportedFormats}
 														bind:selected={files
@@ -378,38 +350,6 @@
 															files.files.length -
 																i -
 																1
-														].to}
-														onselect={() => {
-															file.result = null;
-														}}
-													/>
-												</div>
-												<div
-													class="w-full sm:hidden block h-11"
-												>
-													<div
-														class="py-2 px-3 font-display bg-foreground text-background rounded-xl"
-													>
-														{file.from}
-													</div>
-												</div>
-												<div
-													class="w-full sm:hidden h-full flex justify-center items-center"
-												>
-													<ArrowRight
-														class="w-6 h-6 text-accent-foreground"
-													/>
-												</div>
-												<div
-													class="w-full sm:hidden block h-full"
-												>
-													<Dropdown
-														options={converter.supportedFormats}
-														bind:selected={files
-															.files[
-															files.files.length -
-																1 -
-																i
 														].to}
 														onselect={() => {
 															file.result = null;
@@ -447,19 +387,6 @@
 											</button>
 										</div> -->
 									</div>
-									<button
-										onclick={() => {
-											// delete the file from the list
-											files.files = files.files.filter(
-												(f) => f !== file,
-											);
-											if (files.files.length === 0)
-												goto("/");
-										}}
-										class="ml-2 mr-1 sm:block hidden lg:hidden"
-									>
-										<XIcon size="18" />
-									</button>
 								</div>
 							</div>
 							{#if converter && converter.supportedFormats.includes(file.from)}
@@ -472,15 +399,11 @@
 										style="background-image: url({file.blobUrl});"
 									></div>
 									<div
-										class="absolute sm:top-0 bottom-0 sm:left-0 h-5/6 w-full sm:h-full"
+										class="absolute left-0 bottom-0 h-5/6 w-full"
 									>
 										<ProgressiveBlur
-											direction={isSm
-												? "bottom"
-												: isLg
-													? "bottom"
-													: "right"}
-											endIntensity={isLg ? 64 : 128}
+											direction={"bottom"}
+											endIntensity={64}
 											iterations={6}
 											fadeTo="var(--bg-transparent)"
 										/>
