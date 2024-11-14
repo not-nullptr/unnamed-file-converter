@@ -18,7 +18,6 @@
 					const converter = converters.find((c) =>
 						c.supportedFormats.includes(from),
 					);
-					console.log(converter);
 					if (!converter) resolve();
 					const to =
 						converter?.supportedFormats.find((f) => f !== from) ||

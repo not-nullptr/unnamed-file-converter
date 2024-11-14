@@ -21,7 +21,6 @@ class Theme {
 	public dark = $state(false);
 	public toggle = () => {
 		this.dark = !this.dark;
-		console.log(this.dark);
 	};
 }
 

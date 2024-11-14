@@ -3,6 +3,7 @@ import { Converter } from "./converter.svelte";
 import VipsWorker from "$lib/workers/vips?worker";
 import { browser } from "$app/environment";
 import type { WorkerMessage, OmitBetterStrict } from "$lib/types";
+import { log } from "$lib/logger";
 
 export class VipsConverter extends Converter {
 	private worker: Worker = browser ? new VipsWorker() : null!;
@@ -30,6 +31,7 @@ export class VipsConverter extends Converter {
 
 	constructor() {
 		super();
+		log(["converters", this.name], `created converter`);
 		if (!browser) return;
 		this.worker.onmessage = (e) => {
 			const message: WorkerMessage = e.data;

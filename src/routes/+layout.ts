@@ -7,7 +7,9 @@ export const load = ({ data }) => {
 	const themeStr = getCookie("theme");
 	if (typeof themeStr === "undefined") {
 		theme.dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-		setCookie("theme", theme.dark ? "dark" : "light");
+		setCookie("theme", theme.dark ? "dark" : "light", {
+			sameSite: "strict",
+		});
 	} else {
 		theme.dark = themeStr === "dark";
 	}

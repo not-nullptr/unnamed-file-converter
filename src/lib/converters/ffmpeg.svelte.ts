@@ -3,6 +3,7 @@ import { Converter } from "./converter.svelte";
 import type { OmitBetterStrict } from "$lib/types";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { browser } from "$app/environment";
+import { log } from "$lib/logger";
 
 export class FFmpegConverter extends Converter {
 	private ffmpeg: FFmpeg = null!;
@@ -16,7 +17,6 @@ export class FFmpegConverter extends Converter {
 		".ogg",
 		".aac",
 		".m4a",
-		".opus",
 		".wma",
 		".m4a",
 		".amr",
@@ -27,6 +27,7 @@ export class FFmpegConverter extends Converter {
 
 	constructor() {
 		super();
+		log(["converters", this.name], `created converter`);
 		if (!browser) return;
 		this.ffmpeg = new FFmpeg();
 		(async () => {
