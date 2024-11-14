@@ -41,19 +41,30 @@
 						// get the blob
 						canvas.toBlob(
 							(blob) => {
-								if (blob === null)
-									reject("Failed to convert image to blob");
 								resolve({
 									file: f,
 									from,
 									to,
-									blobUrl: URL.createObjectURL(blob!),
+									blobUrl:
+										blob === null
+											? ""
+											: URL.createObjectURL(blob),
 									id: Math.random().toString(36).substring(2),
 								});
 							},
 							"image/jpeg",
 							0.75,
 						);
+					};
+
+					img.onerror = () => {
+						resolve({
+							file: f,
+							from,
+							to,
+							blobUrl: "",
+							id: Math.random().toString(36).substring(2),
+						});
 					};
 				},
 			);
