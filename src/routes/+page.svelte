@@ -139,7 +139,7 @@
 			<!-- {@render sellingPoint("Very fast, all processing done on device")}
 			{@render sellingPoint("No ads, and open source")}
 			{@render sellingPoint("Beautiful and straightforward UI")} -->
-			{#each ["Very fast, all processing done on device", "No ads, and open source", "Beautiful and straightforward UI"] as text, i}
+			{#each ["Very fast, all processing done on device", "No file or size limit", "No ads, and open source", "Beautiful and straightforward UI"] as text, i}
 				<div class="fly-in" style="--delay: {i * 50}ms;">
 					{@render sellingPoint(text)}
 				</div>
