@@ -44,26 +44,9 @@
 						// get the blob
 						canvas.toBlob(
 							async (blob) => {
-								// resolve({
-								// 	file: f,
-								// 	from,
-								// 	to,
-								// 	blobUrl:
-								// 		blob === null
-								// 			? ""
-								// 			: URL.createObjectURL(blob),
-								// 	id: Math.random().toString(36).substring(2),
-								// 	buffer: await f.arrayBuffer(),
-								// 	extension: from,
-								// 	name: f.name,
-								// 	result: null,
-								// 	progress: 0,
-								// });
 								resolve(
 									new VertFile(
-										new File([blob!], f.name, {
-											type: blob!.type,
-										}),
+										f,
 										to,
 										URL.createObjectURL(blob!),
 									),
@@ -75,26 +58,7 @@
 					};
 
 					img.onerror = async () => {
-						// resolve({
-						// 	file: f,
-						// 	from,
-						// 	to,
-						// 	blobUrl: "",
-						// 	id: Math.random().toString(36).substring(2),
-						// 	name: f.name,
-						// 	buffer: await f.arrayBuffer(),
-						// 	extension: from,
-						// 	result: null,
-						// 	progress: 0,
-						// });
-						resolve(
-							new VertFile(
-								new File([await f.arrayBuffer()], f.name, {
-									type: f.type,
-								}),
-								to,
-							),
-						);
+						resolve(new VertFile(f, to));
 					};
 				},
 			);
