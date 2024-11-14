@@ -45,10 +45,6 @@ export class FFmpegConverter extends Converter {
 		if (!to.startsWith(".")) to = `.${to}`;
 		const ffmpeg = new FFmpeg();
 		ffmpeg.on("progress", (progress) => {
-			log(
-				["converters", this.name],
-				`progress for "${input.name}": ${progress.progress * 100}%`,
-			);
 			input.progress = progress.progress * 100;
 		});
 		const baseURL =

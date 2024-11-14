@@ -138,6 +138,11 @@
 		URL.revokeObjectURL(url);
 		a.remove();
 	};
+
+	const deleteAll = () => {
+		files.files = [];
+		goto("/");
+	};
 </script>
 
 <svelte:head>
@@ -210,13 +215,15 @@
 					</div>
 				</div>
 
-				<div class="grid md:grid-cols-2 gap-3 mt-4">
+				<div class="flex sm:flex-row flex-col gap-3 mt-4">
 					<button
 						onclick={convertAll}
 						class={clsx("btn flex-grow", {
-							"btn-highlight": disabled,
+							"btn-highlight":
+								disabled && !processings.some((p) => p),
 						})}
-						disabled={!allConvertersReady}
+						disabled={!allConvertersReady ||
+							processings.some((p) => p)}
 					>
 						{#if allConvertersReady}
 							Convert {files.files.length > 1 ? "All" : ""}
@@ -232,6 +239,13 @@
 						{disabled}
 						>Download {files.files.length > 1 ? "All" : ""}</button
 					>
+					<button
+						onclick={deleteAll}
+						disabled={processings.some((p) => p)}
+						class="btn flex-grow"
+					>
+						Delete All
+					</button>
 				</div>
 			</div>
 			<div
@@ -276,7 +290,7 @@
 								<div class="w-full lg:flex-grow">
 									<div
 										class={clsx(
-											"py-2 px-3 lg:w-full lg:flex rounded-xl transition-colors duration-300 sm:w-fit w-full flex-shrink sm:text-left text-center",
+											"py-2 px-3 lg:justify-between lg:w-full lg:flex rounded-xl transition-colors duration-300 sm:w-fit w-full flex-shrink sm:text-left text-center",
 											{
 												"bg-accent-background text-accent-foreground":
 													file.result,
@@ -286,7 +300,7 @@
 										)}
 									>
 										<h3
-											class="lg:flex-grow flex-shrink whitespace-nowrap overflow-hidden text-ellipsis sm:max-w-96"
+											class="lg:flex-grow lg:w-full flex-shrink whitespace-nowrap overflow-hidden text-ellipsis sm:max-w-96"
 										>
 											{file.file.name}
 										</h3>

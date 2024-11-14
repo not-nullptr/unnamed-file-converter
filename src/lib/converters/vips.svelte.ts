@@ -88,7 +88,6 @@ export class VipsConverter extends Converter {
 
 			this.worker.addEventListener("message", onMessage);
 			const msg = { ...message, id, worker: null };
-			log(["converters", this.name], `sending message`, msg);
 			try {
 				this.worker.postMessage(msg);
 			} catch (e) {
