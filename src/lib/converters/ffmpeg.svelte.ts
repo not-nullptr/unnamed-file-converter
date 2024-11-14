@@ -24,6 +24,8 @@ export class FFmpegConverter extends Converter {
 		".aiff",
 	];
 
+	public readonly reportsProgress = true;
+
 	constructor() {
 		super();
 		log(["converters", this.name], `created converter`);

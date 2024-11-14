@@ -29,6 +29,8 @@ export class VipsConverter extends Converter {
 		".tiff",
 	];
 
+	public readonly reportsProgress = false;
+
 	constructor() {
 		super();
 		log(["converters", this.name], `created converter`);

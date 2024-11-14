@@ -18,6 +18,7 @@ export class Converter {
 	 * @param to The format to convert to. Includes the dot.
 	 */
 	public ready: boolean = $state(false);
+	public readonly reportsProgress: boolean = false;
 
 	public async convert(
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
