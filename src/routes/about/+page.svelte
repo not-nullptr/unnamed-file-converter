@@ -54,27 +54,36 @@
 		🖼️ supported formats
 	</h2>
 	<p class="mt-6 text-transition" style="--delay: {4 * multiplier}ms">
-		As of right now, VERT only supports image conversion of most popular
-		formats. Don't worry though, as we'll add more options and support for
-		more formats in the future!
+		As of right now, VERT supports image and audio conversion of most
+		popular formats. We'll add support for more formats in the future!
 	</p>
 
 	<h2
 		class="font-display text-3xl mt-12 text-transition"
 		style="--delay: {5 * multiplier}ms"
 	>
-		👨‍💻 source code
+		🔗 resources
 	</h2>
-	<p class="mt-6 text-transition" style="--delay: {6 * multiplier}ms">
-		VERT is licensed under AGPL-3.0, and the source code can be found on <a
-			class="hover:underline font-medium text-foreground-highlight"
-			href="https://github.com/not-nullptr/VERT">GitHub</a
-		>.
-	</p>
+	<ul class="list-disc list-inside mt-6">
+		<li class="text-transition" style="--delay: {6 * multiplier}ms">
+			<a
+				href="https://github.com/not-nullptr/VERT"
+				class="text-foreground-highlight hover:underline">Source code</a
+			> (hosted on GitHub, licensed under AGPL-3.0)
+		</li>
+
+		<li class="text-transition" style="--delay: {7 * multiplier}ms">
+			<a
+				href="https://discord.gg/8XXZ7TFFrK"
+				class="text-foreground-highlight hover:underline"
+				>Discord server</a
+			> (for chit-chat, suggestions, and support)
+		</li>
+	</ul>
 
 	<h2
 		class="font-display text-3xl mt-12 text-transition"
-		style="--delay: {7 * multiplier}ms"
+		style="--delay: {8 * multiplier}ms"
 	>
 		🎨 credits
 	</h2>
@@ -83,7 +92,7 @@
 			<div class="hover:scale-105 w-56 transition-transform">
 				<div
 					class="border-2 credit-transition border-solid border-foreground-muted-alt rounded-2xl overflow-hidden"
-					style="--delay: {i * 50 + multiplier * 8}ms;"
+					style="--delay: {i * 50 + multiplier * 9}ms;"
 				>
 					<a class="w-48" href={credit.url} target="_blank">
 						<img src={credit.avatar} alt="{credit.name}'s avatar" />
@@ -101,7 +110,7 @@
 
 	<p
 		class="text-foreground-muted text-base mt-10 text-transition"
-		style="--delay: {9 * multiplier}ms"
+		style="--delay: {10 * multiplier}ms"
 	>
 		(obviously inspired by <a
 			href="https://cobalt.tools"

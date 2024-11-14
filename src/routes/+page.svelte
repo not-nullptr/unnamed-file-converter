@@ -2,6 +2,7 @@
 	import { goto } from "$app/navigation";
 	import Uploader from "$lib/components/functional/Uploader.svelte";
 	import { converters } from "$lib/converters";
+	import { log } from "$lib/logger/index.js";
 	import { files } from "$lib/store/index.svelte";
 	import { Check } from "lucide-svelte";
 
@@ -9,31 +10,79 @@
 
 	let ourFiles = $state<File[]>();
 
-	const runUpload = () => {
+	const runUpload = async () => {
+		const newFilePromises = (ourFiles || []).map(async (f) => {
+			return new Promise<(typeof files.files)[0] | void>(
+				(resolve, reject) => {
+					const from =
+						"." + f.name.toLowerCase().split(".").slice(-1);
+					const converter = converters.find((c) =>
+						c.supportedFormats.includes(from),
+					);
+					if (!converter) resolve();
+					const to =
+						converter?.supportedFormats.find((f) => f !== from) ||
+						converters[0].supportedFormats[0];
+					log(
+						["uploader", "converter"],
+						`converting ${from} to ${to} using ${converter?.name || "... no converter??"}`,
+					);
+					const canvas = document.createElement("canvas");
+					const ctx = canvas.getContext("2d");
+					const img = new Image();
+					img.src = URL.createObjectURL(f);
+					const maxSize = 512;
+					img.onload = () => {
+						const scale = Math.max(
+							maxSize / img.width,
+							maxSize / img.height,
+						);
+						canvas.width = img.width * scale;
+						canvas.height = img.height * scale;
+						ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+						// get the blob
+						canvas.toBlob(
+							(blob) => {
+								resolve({
+									file: f,
+									from,
+									to,
+									blobUrl:
+										blob === null
+											? ""
+											: URL.createObjectURL(blob),
+									id: Math.random().toString(36).substring(2),
+								});
+							},
+							"image/jpeg",
+							0.75,
+						);
+					};
+
+					img.onerror = () => {
+						resolve({
+							file: f,
+							from,
+							to,
+							blobUrl: "",
+							id: Math.random().toString(36).substring(2),
+						});
+					};
+				},
+			);
+		});
+		let oldLen = files.files.length;
 		files.files = [
 			...files.files,
-			...(ourFiles || []).map((f, i) => {
-				const from = "." + f.name.toLowerCase().split(".").slice(-1);
-				const converter = converters.find((c) =>
-					c.supportedFormats.includes(from),
-				);
-				const to =
-					converter?.supportedFormats.find((f) => f !== from) ||
-					converters[0].supportedFormats[0];
-				return {
-					file: f,
-					from,
-					to,
-					blobUrl: URL.createObjectURL(f),
-					id: Math.random().toString(36).substring(2),
-				};
-			}),
+			...(await Promise.all(newFilePromises)).filter(
+				(f) => typeof f !== "undefined",
+			),
 		];
-
+		let newLen = files.files.length;
+		log(["uploader"], `handled ${newLen - oldLen} files`);
 		ourFiles = [];
 
-		if (files.files.length > 0 && !files.beenToConverterPage)
-			goto("/convert");
+		if (files.files.length > 0) goto("/convert");
 	};
 </script>
 
@@ -83,7 +132,7 @@
 
 <div class="[@media(max-height:768px)]:block mt-10 picker-fly">
 	<Uploader
-		isMobile={data.isMobile}
+		isMobile={data.isMobile || false}
 		bind:files={ourFiles}
 		onupload={runUpload}
 		acceptedFormats={[
@@ -104,7 +153,7 @@
 			<!-- {@render sellingPoint("Very fast, all processing done on device")}
 			{@render sellingPoint("No ads, and open source")}
 			{@render sellingPoint("Beautiful and straightforward UI")} -->
-			{#each ["Very fast, all processing done on device", "No ads, and open source", "Beautiful and straightforward UI"] as text, i}
+			{#each ["Very fast, all processing done on device", "No file or size limit", "No ads, and open source", "Beautiful and straightforward UI"] as text, i}
 				<div class="fly-in" style="--delay: {i * 50}ms;">
 					{@render sellingPoint(text)}
 				</div>

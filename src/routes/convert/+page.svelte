@@ -5,6 +5,7 @@
 	import ProgressiveBlur from "$lib/components/visual/effects/ProgressiveBlur.svelte";
 	import { converters } from "$lib/converters";
 	import type { Converter } from "$lib/converters/converter.svelte";
+	import { log } from "$lib/logger";
 	import { files, outputFilenameOption } from "$lib/store/index.svelte";
 	import clsx from "clsx";
 	import { ArrowRight, XIcon } from "lucide-svelte";
@@ -74,6 +75,7 @@
 	});
 
 	const convertAll = async () => {
+		const perf = performance.now();
 		files.files.forEach((f) => (f.result = null));
 		const promises: Promise<void>[] = [];
 		for (let i = 0; i < files.files.length; i++) {
@@ -113,6 +115,9 @@
 		}
 
 		await Promise.all(promises);
+		const ms = performance.now() - perf;
+		const seconds = (ms / 1000).toFixed(2);
+		log(["converter"], `converted all files in ${seconds}s`);
 	};
 
 	const downloadAll = async () => {
@@ -413,7 +418,7 @@
 										direction={isSm ? "bottom" : "right"}
 										endIntensity={128}
 										iterations={6}
-										fadeTo="rgba(255, 255, 255, 0.6)"
+										fadeTo="var(--bg-transparent)"
 									/>
 								</div>
 							</div>

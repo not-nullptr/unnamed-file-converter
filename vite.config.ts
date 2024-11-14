@@ -26,4 +26,11 @@ export default defineConfig({
 			"@ffmpeg/util",
 		],
 	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				api: "modern",
+			},
+		},
+	},
 });

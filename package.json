@@ -24,6 +24,7 @@
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.6",
 		"prettier-plugin-tailwindcss": "^0.6.5",
+		"sass": "^1.80.7",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"tailwindcss": "^3.4.9",
@@ -41,6 +42,7 @@
 		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.456.0",
 		"svelte-adapter-bun": "^0.5.2",
+		"typescript-cookie": "^1.0.6",
 		"wasm-vips": "^0.0.11"
 	}
 }

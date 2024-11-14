@@ -1,0 +1,11 @@
+services:
+  vert:
+    container_name: vert
+    build:
+      context: .
+      args:
+        PUB_HOSTNAME: "vert.sh"
+        PUB_PLAUSIBLE_URL: "https://plausible.example.com"
+    restart: unless-stopped
+    ports:
+      - 3000:3000

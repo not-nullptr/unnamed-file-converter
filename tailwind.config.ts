@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 export default {
 	content: ["./src/**/*.{html,js,svelte,ts}"],
-
 	theme: {
 		extend: {
 			colors: {
@@ -25,5 +25,12 @@ export default {
 		},
 	},
 
-	plugins: [],
+	plugins: [
+		plugin(function ({ addVariant }) {
+			addVariant("dynadark", [
+				"body:not(.light).dark &",
+				"@media (prefers-color-scheme: dark) { body:not(.light) &",
+			]);
+		}),
+	],
 } satisfies Config;

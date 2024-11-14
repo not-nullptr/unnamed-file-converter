@@ -1,3 +1,4 @@
+import { log } from "$lib/logger";
 import type { IFile } from "$lib/types";
 
 class Files {
@@ -11,12 +12,18 @@ class Files {
 			result?: (IFile & { blobUrl: string; animating: boolean }) | null;
 		}[]
 	>([]);
-	public beenToConverterPage = $state(false);
-	public shouldShowAlert = $derived(
-		!this.beenToConverterPage && this.files.length > 0,
-	);
+}
+
+class Theme {
+	public dark = $state(false);
+	public toggle = () => {
+		this.dark = !this.dark;
+		log(["theme"], `set to ${this.dark ? "dark" : "light"}`);
+	};
 }
 
 export const files = new Files();
+
+export const theme = new Theme();
 
 export const outputFilenameOption = ["default", "original"];

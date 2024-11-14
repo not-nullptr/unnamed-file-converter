@@ -3,6 +3,7 @@ import { Converter } from "./converter.svelte";
 import VipsWorker from "$lib/workers/vips?worker";
 import { browser } from "$app/environment";
 import type { WorkerMessage, OmitBetterStrict } from "$lib/types";
+import { log } from "$lib/logger";
 
 export class VipsConverter extends Converter {
 	private worker: Worker = browser ? new VipsWorker() : null!;
@@ -30,6 +31,7 @@ export class VipsConverter extends Converter {
 
 	constructor() {
 		super();
+		log(["converters", this.name], `created converter`);
 		if (!browser) return;
 		this.worker.onmessage = (e) => {
 			const message: WorkerMessage = e.data;
@@ -41,6 +43,7 @@ export class VipsConverter extends Converter {
 		input: OmitBetterStrict<IFile, "extension">,
 		to: string,
 	): Promise<IFile> {
+		log(["converters", this.name], `converting ${input.name} to ${to}`);
 		const res = await this.sendMessage({
 			type: "convert",
 			input: input as unknown as IFile,
@@ -48,6 +51,7 @@ export class VipsConverter extends Converter {
 		});
 
 		if (res.type === "finished") {
+			log(["converters", this.name], `converted ${input.name} to ${to}`);
 			return res.output;
 		}
 
