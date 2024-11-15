@@ -1,9 +1,9 @@
-import { VertFile } from "$lib/types";
-import { Converter } from "./converter.svelte";
-import VipsWorker from "$lib/workers/vips?worker";
 import { browser } from "$app/environment";
-import type { WorkerMessage, OmitBetterStrict } from "$lib/types";
 import { log } from "$lib/logger";
+import type { OmitBetterStrict, WorkerMessage } from "$lib/types";
+import { VertFile } from "$lib/types";
+import VipsWorker from "$lib/workers/vips?worker";
+import { Converter } from "./converter.svelte";
 
 export class VipsConverter extends Converter {
 	private worker: Worker = browser ? new VipsWorker() : null!;

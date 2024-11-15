@@ -5,9 +5,9 @@
 	import { log } from "$lib/logger";
 	import { files } from "$lib/store/index.svelte";
 	import { VertFile } from "$lib/types/file.svelte";
-	import { Check } from "lucide-svelte";
 	import jsmediatags from "jsmediatags";
 	import type { TagType } from "jsmediatags/types/index.js";
+	import { Check } from "lucide-svelte";
 
 	const { data } = $props();
 

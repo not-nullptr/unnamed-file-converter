@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Upload } from "lucide-svelte";
 	import clsx from "clsx";
+	import { Upload } from "lucide-svelte";
 	import { onMount } from "svelte";
 
 	let fileList = $state<FileList>();
@@ -21,7 +21,12 @@
 	let fileInput = $state<HTMLInputElement>();
 	let dragOver = $state(false);
 
-	let { files = $bindable(), onupload, isMobile, acceptedFormats }: Props = $props();
+	let {
+		files = $bindable(),
+		onupload,
+		isMobile,
+		acceptedFormats,
+	}: Props = $props();
 
 	function upload() {
 		if (!fileInput) return;

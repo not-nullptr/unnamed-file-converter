@@ -1,8 +1,8 @@
-import { VertFile } from "$lib/types";
-import { Converter } from "./converter.svelte";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { browser } from "$app/environment";
 import { log } from "$lib/logger";
+import { VertFile } from "$lib/types";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { Converter } from "./converter.svelte";
 
 export class FFmpegConverter extends Converter {
 	private ffmpeg: FFmpeg = null!;
