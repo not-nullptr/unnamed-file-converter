@@ -9,12 +9,15 @@
 	import { files, theme } from "$lib/store/index.svelte";
 	import JSCookie from "js-cookie";
 	import { MoonIcon, SunIcon } from "lucide-svelte";
+	import { onMount } from "svelte";
 	import { quintOut } from "svelte/easing";
 	import { writable } from "svelte/store";
 	import "../app.scss";
 	let { children, data } = $props();
 
 	let shouldGoBack = writable(false);
+	let navbar = $state<HTMLDivElement>();
+	let hover = $state(false);
 
 	const links = $derived<
 		{
@@ -53,22 +56,35 @@
 	$effect(() => {
 		if (!browser) return;
 		if (theme.dark) {
-			document.body.classList.add("dark");
-			document.body.classList.remove("light");
+			document.documentElement.classList.add("dark");
+			document.documentElement.classList.remove("light");
 			JSCookie.set("theme", "dark", {
 				path: "/",
 				sameSite: "lax",
 				expires: 2147483647,
 			});
 		} else {
-			document.body.classList.add("light");
-			document.body.classList.remove("dark");
+			document.documentElement.classList.add("light");
+			document.documentElement.classList.remove("dark");
 			JSCookie.set("theme", "light", {
 				path: "/",
 				sameSite: "lax",
 				expires: 2147483647,
 			});
 		}
+	});
+
+	onMount(() => {
+		const mouseEnter = () => {
+			hover = true;
+		};
+
+		const mouseLeave = () => {
+			hover = false;
+		};
+
+		navbar?.addEventListener("mouseenter", mouseEnter);
+		navbar?.addEventListener("mouseleave", mouseLeave);
 	});
 </script>
 
@@ -102,6 +118,7 @@
 
 	<div
 		class="w-full max-w-screen-md p-1 border-solid border-2 rounded-2xl border-foreground-muted-alt flex mb-10 mx-auto lg:mt-5"
+		bind:this={navbar}
 	>
 		<div class="md:p-1">
 			<a
@@ -200,6 +217,7 @@
 			<div class="w-full">
 				<div
 					class="absolute top-0 left-0 w-full"
+					style={hover ? "will-change: opacity, blur, transform" : ""}
 					in:blur={{
 						duration,
 						easing: quintOut,

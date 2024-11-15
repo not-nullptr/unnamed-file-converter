@@ -39,6 +39,7 @@
 	--fg-muted-alt: hsl(0, 0%, 75%);
 	--fg-highlight: hsl(303, 61%, 47%);
 	--fg-failure: hsl(0, 67%, 49%);
+	color-scheme: light;
 }
 
 @mixin dark {
@@ -51,25 +52,26 @@
 	--fg-muted-alt: hsl(0, 0%, 25%);
 	--fg-highlight: hsl(303, 64%, 65%);
 	--fg-failure: hsl(0, 67%, 80%);
+	color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
-	body {
+	:root {
 		@include dark;
 	}
 }
 
 @media (prefers-color-scheme: light) {
-	body {
+	:root {
 		@include light;
 	}
 }
 
-body.light {
+:root.light {
 	@include light;
 }
 
-body.dark {
+:root.dark {
 	@include dark;
 }
 
