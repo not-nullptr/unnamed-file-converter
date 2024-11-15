@@ -10,11 +10,10 @@
 	import { files, outputFilenameOption } from "$lib/store/index.svelte";
 	import type { VertFile } from "$lib/types";
 	import clsx from "clsx";
-	import { ArrowRight, Disc2Icon, FileAudioIcon, XIcon } from "lucide-svelte";
+	import { FileAudioIcon, XIcon } from "lucide-svelte";
 	import { onMount } from "svelte";
 	import { quintOut } from "svelte/easing";
 	import {
-		fade,
 		type EasingFunction,
 		type TransitionConfig,
 	} from "svelte/transition";

@@ -1,17 +1,17 @@
 <script lang="ts">
-	import "../app.scss";
-	import { goto } from "$app/navigation";
-	import { blur, duration } from "$lib/animation";
-	import { quintOut } from "svelte/easing";
-	import { files, theme } from "$lib/store/index.svelte";
-	import Logo from "$lib/components/visual/svg/Logo.svelte";
-	import featuredImage from "$lib/assets/VERT_Feature.webp";
-	import { PUB_HOSTNAME, PUB_PLAUSIBLE_URL } from "$env/static/public";
-	import FancyMenu from "$lib/components/functional/FancyMenu.svelte";
-	import { writable } from "svelte/store";
-	import { MoonIcon, SunIcon } from "lucide-svelte";
 	import { browser } from "$app/environment";
+	import { goto } from "$app/navigation";
+	import { PUB_HOSTNAME, PUB_PLAUSIBLE_URL } from "$env/static/public";
+	import { blur, duration } from "$lib/animation";
+	import featuredImage from "$lib/assets/VERT_Feature.webp";
+	import FancyMenu from "$lib/components/functional/FancyMenu.svelte";
+	import Logo from "$lib/components/visual/svg/Logo.svelte";
+	import { files, theme } from "$lib/store/index.svelte";
 	import JSCookie from "js-cookie";
+	import { MoonIcon, SunIcon } from "lucide-svelte";
+	import { quintOut } from "svelte/easing";
+	import { writable } from "svelte/store";
+	import "../app.scss";
 	let { children, data } = $props();
 
 	let shouldGoBack = writable(false);

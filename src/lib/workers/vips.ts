@@ -1,4 +1,4 @@
-import { type WorkerMessage, type OmitBetterStrict } from "$lib/types";
+import { type OmitBetterStrict, type WorkerMessage } from "$lib/types";
 import Vips from "wasm-vips";
 
 const vipsPromise = Vips({

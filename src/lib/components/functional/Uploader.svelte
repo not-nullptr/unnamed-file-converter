@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Upload } from "lucide-svelte";
 	import clsx from "clsx";
+	import { Upload } from "lucide-svelte";
 	import { onMount } from "svelte";
 
 	let fileList = $state<FileList>();
