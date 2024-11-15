@@ -53,16 +53,16 @@
 	$effect(() => {
 		if (!browser) return;
 		if (theme.dark) {
-			document.body.classList.add("dark");
-			document.body.classList.remove("light");
+			document.documentElement.classList.add("dark");
+			document.documentElement.classList.remove("light");
 			JSCookie.set("theme", "dark", {
 				path: "/",
 				sameSite: "lax",
 				expires: 2147483647,
 			});
 		} else {
-			document.body.classList.add("light");
-			document.body.classList.remove("dark");
+			document.documentElement.classList.add("light");
+			document.documentElement.classList.remove("dark");
 			JSCookie.set("theme", "light", {
 				path: "/",
 				sameSite: "lax",

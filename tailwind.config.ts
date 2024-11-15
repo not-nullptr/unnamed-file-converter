@@ -28,8 +28,8 @@ export default {
 	plugins: [
 		plugin(function ({ addVariant }) {
 			addVariant("dynadark", [
-				"body:not(.light).dark &",
-				"@media (prefers-color-scheme: dark) { body:not(.light) &",
+				":root:not(.light).dark &",
+				"@media (prefers-color-scheme: dark) { :root:not(.light) &",
 			]);
 		}),
 	],
