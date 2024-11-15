@@ -49,6 +49,22 @@ To build the project for production, run `bun run build`
 
 This will build the site to the `build` folder. You can then start the server with `bun run preview` and navigate to `http://localhost:4173` to see the application.
 
+### With Docker
+
+Clone the repository, then build a Docker image with:
+```shell
+$ docker build -t not-nullptr/vert \
+	--build-arg PUB_HOSTNAME=vert.sh \
+	--build-arg PUB_PLAUSIBLE_URL=https://plausible.example.com .
+```
+
+You can then run it by using:
+```shell
+$ docker run --restart unless-stopped -p 3000:3000 -d --name "vert" not-nullptr/vert
+```
+
+We also have a `docker-compose.yml` file available. Use `docker compose up` if you want to start the stack, or `docker compose down` to bring it down. You can pass `--build` to `docker compose up` to rebuild the Docker image (useful if you've changed any of the environment variables) as well as `-d` to start it in dettached mode. You can read more about Docker Compose in general [here](https://docs.docker.com/compose/intro/compose-application-model/).
+
 ## License
 
 This project is licensed under the AGPL-3.0 License, please see the [LICENSE](LICENSE) file for details.

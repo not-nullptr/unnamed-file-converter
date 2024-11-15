@@ -1,4 +1,4 @@
-import type { IFile, OmitBetterStrict } from "$lib/types";
+import type { VertFile } from "$lib/types";
 
 /**
  * Base class for all converters.
@@ -18,13 +18,14 @@ export class Converter {
 	 * @param to The format to convert to. Includes the dot.
 	 */
 	public ready: boolean = $state(false);
+	public readonly reportsProgress: boolean = false;
 
 	public async convert(
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		input: OmitBetterStrict<IFile, "extension">,
+		input: VertFile,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		to: string,
-	): Promise<IFile> {
+	): Promise<VertFile> {
 		throw new Error("Not implemented");
 	}
 }

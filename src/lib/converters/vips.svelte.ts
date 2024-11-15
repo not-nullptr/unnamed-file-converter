@@ -1,4 +1,4 @@
-import type { IFile } from "$lib/types";
+import { VertFile } from "$lib/types";
 import { Converter } from "./converter.svelte";
 import VipsWorker from "$lib/workers/vips?worker";
 import { browser } from "$app/environment";
@@ -29,6 +29,8 @@ export class VipsConverter extends Converter {
 		".tiff",
 	];
 
+	public readonly reportsProgress = false;
+
 	constructor() {
 		super();
 		log(["converters", this.name], `created converter`);
@@ -39,20 +41,23 @@ export class VipsConverter extends Converter {
 		};
 	}
 
-	public async convert(
-		input: OmitBetterStrict<IFile, "extension">,
-		to: string,
-	): Promise<IFile> {
+	public async convert(input: VertFile, to: string): Promise<VertFile> {
 		log(["converters", this.name], `converting ${input.name} to ${to}`);
-		const res = await this.sendMessage({
+		const msg = {
 			type: "convert",
-			input: input as unknown as IFile,
+			input: {
+				file: input.file,
+				name: input.name,
+				to: input.to,
+				from: input.from,
+			},
 			to,
-		});
+		} as WorkerMessage;
+		const res = await this.sendMessage(msg);
 
 		if (res.type === "finished") {
 			log(["converters", this.name], `converted ${input.name} to ${to}`);
-			return res.output;
+			return new VertFile(new File([res.output], input.name), to);
 		}
 
 		if (res.type === "error") {
@@ -84,8 +89,12 @@ export class VipsConverter extends Converter {
 			}, 60000);
 
 			this.worker.addEventListener("message", onMessage);
-
-			this.worker.postMessage({ ...message, id });
+			const msg = { ...message, id, worker: null };
+			try {
+				this.worker.postMessage(msg);
+			} catch (e) {
+				console.error(e);
+			}
 		});
 	}
 }

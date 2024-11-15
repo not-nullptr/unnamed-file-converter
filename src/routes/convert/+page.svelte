@@ -3,22 +3,29 @@
 	import { blur, duration, flip } from "$lib/animation";
 	import Dropdown from "$lib/components/functional/Dropdown.svelte";
 	import ProgressiveBlur from "$lib/components/visual/effects/ProgressiveBlur.svelte";
+	import ProgressBar from "$lib/components/visual/ProgressBar.svelte";
 	import { converters } from "$lib/converters";
 	import type { Converter } from "$lib/converters/converter.svelte";
 	import { log } from "$lib/logger";
 	import { files, outputFilenameOption } from "$lib/store/index.svelte";
+	import type { VertFile } from "$lib/types";
 	import clsx from "clsx";
-	import { ArrowRight, XIcon } from "lucide-svelte";
+	import { ArrowRight, Disc2Icon, FileAudioIcon, XIcon } from "lucide-svelte";
 	import { onMount } from "svelte";
 	import { quintOut } from "svelte/easing";
+	import {
+		fade,
+		type EasingFunction,
+		type TransitionConfig,
+	} from "svelte/transition";
+
+	const { data } = $props();
 
 	const reversedFiles = $derived(files.files.slice().reverse());
 
 	let finisheds = $state(
 		Array.from({ length: files.files.length }, () => false),
 	);
-
-	let isSm = $state(false);
 
 	let processings = $state<boolean[]>([]);
 
@@ -51,11 +58,6 @@
 	let outputFilename = $state(outputFilenameOption[0]);
 
 	onMount(() => {
-		isSm = window.innerWidth < 640;
-		window.addEventListener("resize", () => {
-			isSm = window.innerWidth < 640;
-		});
-
 		// reloads the "output filename" option
 		const savedOption = localStorage.getItem("outputFilename");
 		if (savedOption) {
@@ -80,37 +82,9 @@
 		const promises: Promise<void>[] = [];
 		for (let i = 0; i < files.files.length; i++) {
 			promises.push(
-				(async () => {
-					const file = files.files[i];
-					const converter = converters.find(
-						(c) =>
-							c.supportedFormats.includes(file.from) &&
-							c.supportedFormats.includes(file.to),
-					);
-					if (!converter) throw new Error("No converter found");
-					const to = file.to;
-					processings[i] = true;
-					const converted = await converter.convert(
-						{
-							name: file.file.name,
-							buffer: await file.file.arrayBuffer(),
-						},
-						to,
-					);
-					files.files[i] = {
-						...file,
-						result: {
-							...converted,
-							blobUrl: URL.createObjectURL(
-								new Blob([converted.buffer], {
-									type: file.file.type,
-								}),
-							),
-							animating: true,
-						},
-					};
-					processings[i] = false;
-				})(),
+				(async (i) => {
+					await convert(files.files[i], i);
+				})(i),
 			);
 		}
 
@@ -118,6 +92,13 @@
 		const ms = performance.now() - perf;
 		const seconds = (ms / 1000).toFixed(2);
 		log(["converter"], `converted all files in ${seconds}s`);
+	};
+
+	const convert = async (file: VertFile, index: number) => {
+		file.progress = 0;
+		processings[index] = true;
+		await file.convert();
+		processings[index] = false;
 	};
 
 	const downloadAll = async () => {
@@ -133,7 +114,7 @@
 			dlFiles.push({
 				name: file.file.name.replace(/\.[^/.]+$/, "") + file.to,
 				lastModified: Date.now(),
-				input: result.buffer,
+				input: await result.file.arrayBuffer(),
 			});
 		}
 		if (files.files.length === 0) return;
@@ -166,6 +147,38 @@
 		URL.revokeObjectURL(url);
 		a.remove();
 	};
+
+	const deleteAll = () => {
+		files.files = [];
+		goto("/");
+	};
+
+	export const progBlur = (
+		_: HTMLElement,
+		config:
+			| Partial<{
+					duration: number;
+					easing: EasingFunction;
+			  }>
+			| undefined,
+		dir: {
+			direction: "in" | "out" | "both";
+		},
+	): TransitionConfig => {
+		const prefersReducedMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
+		if (!config) config = {};
+		if (!config.duration) config.duration = 300;
+		if (!config.easing) config.easing = quintOut;
+		return {
+			duration: prefersReducedMotion ? 0 : config?.duration || 300,
+			css: (t) => {
+				return "--blur-amount: " + (dir.direction !== "in" ? t : 1 - t);
+			},
+			easing: config?.easing,
+		};
+	};
 </script>
 
 <svelte:head>
@@ -182,7 +195,7 @@
 		</p>
 	{:else}
 		<div
-			class="flex flex-col gap-4 w-full items-center col-start-1 row-start-1"
+			class="flex flex-col gap-4 w-full col-start-1 row-start-1"
 			out:blur={{
 				duration,
 				easing: quintOut,
@@ -248,7 +261,7 @@
 								</div>
 							{:else}
 								<div
-									class="italic w-fit text-foreground-muted-alt h-11 flex items-center row-start-1 col-start-1"
+									class="italic w-fit text-foreground-muted-alt flex items-center row-start-1 col-start-1"
 									transition:blur={{
 										blurMultiplier: 8,
 										duration,
@@ -263,13 +276,15 @@
 					</div>
 				</div>
 
-				<div class="grid md:grid-cols-2 gap-3 mt-4">
+				<div class="grid gap-3 sm:grid-cols-3 mt-4">
 					<button
 						onclick={convertAll}
 						class={clsx("btn flex-grow", {
-							"btn-highlight": disabled,
+							"btn-highlight":
+								disabled && !processings.some((p) => p),
 						})}
-						disabled={!allConvertersReady}
+						disabled={!allConvertersReady ||
+							processings.some((p) => p)}
 					>
 						{#if allConvertersReady}
 							Convert {files.files.length > 1 ? "All" : ""}
@@ -285,148 +300,242 @@
 						{disabled}
 						>Download {files.files.length > 1 ? "All" : ""}</button
 					>
+					<button
+						onclick={deleteAll}
+						disabled={processings.some((p) => p)}
+						class="btn flex-grow"
+					>
+						Delete All
+					</button>
 				</div>
 			</div>
-			{#each reversedFiles as file, i (file.id)}
-				{@const converter = (() => {
-					return converters.find((c) =>
-						c.supportedFormats.includes(file.from),
-					);
-				})()}
-				<div
-					class="w-full rounded-xl"
-					animate:flip={{ duration, easing: quintOut }}
-					out:blur={{
-						duration,
-						easing: quintOut,
-						blurMultiplier: 16,
-					}}
-				>
+			<div class="w-full gap-4 grid md:grid-cols-2">
+				{#each reversedFiles as file, i (file.id)}
+					{@const converter = (() => {
+						return converters.find((c) =>
+							c.supportedFormats.includes(file.from),
+						);
+					})()}
 					<div
-						class={clsx(
-							"sm:h-16 sm:py-0 py-4 px-3 flex relative flex-shrink-0 items-center w-full rounded-xl",
-							{
-								"initial-fade": !finisheds[i],
-								processing:
-									processings[files.files.length - i - 1],
-							},
-						)}
-						style="--delay: {i * 50}ms; z-index: {files.files
-							.length - i}; border: solid 3px {file.result
-							? 'var(--accent-bg)'
-							: 'var(--fg-muted-alt)'}; transition: border 1000ms ease; transition: filter {duration}ms var(--transition), transform {duration}ms var(--transition);"
+						class="relative"
+						animate:flip={{ duration, easing: quintOut }}
+						out:blur={{
+							duration,
+							easing: quintOut,
+							blurMultiplier: 16,
+						}}
 					>
 						<div
-							class="flex gap-8 sm:gap-0 sm:flex-row flex-col items-center justify-between w-full z-50 relative sm:h-fit h-full"
+							class={clsx(
+								"flex relative flex-shrink-0 items-center w-full rounded-xl h-72",
+								{
+									"initial-fade": !finisheds[i],
+								},
+							)}
+							style="--delay: {i * 50}ms; z-index: {files.files
+								.length - i}; border: solid 2px {file.result
+								? 'var(--accent-bg)'
+								: 'var(--fg-muted-alt)'}; transition: border 1000ms ease; transition: filter {duration}ms var(--transition), transform {duration}ms var(--transition);"
 						>
 							<div
-								class={clsx(
-									"py-2 px-3 rounded-xl transition-colors duration-300 sm:w-fit w-full sm:text-left text-center",
-									{
-										"bg-accent-background text-accent-foreground":
-											file.result,
-										"bg-background text-foreground":
-											!file.result,
-									},
-								)}
+								class="flex h-full flex-col items-center w-full z-50 relative"
 							>
-								{file.file.name}
-							</div>
-							<div
-								class="flex items-center gap-3 sm:justify-normal w-full sm:w-fit flex-shrink-0"
-							>
-								{#if converter && converter.supportedFormats.includes(file.from)}
-									<span class="sm:block hidden">from</span>
-									<span
-										class="py-2 px-3 font-display bg-foreground text-background rounded-xl sm:block hidden"
-										>{file.from}</span
-									>
-									<span class="sm:block hidden">to</span>
-									<div class="sm:block hidden">
-										<Dropdown
-											options={converter.supportedFormats}
-											bind:selected={files.files[
-												files.files.length - i - 1
-											].to}
-											onselect={() => {
-												file.result = null;
-											}}
-										/>
-									</div>
-									<div class="w-full sm:hidden block h-11">
-										<div
-											class="py-2 px-3 font-display bg-foreground text-background rounded-xl"
-										>
-											{file.from}
-										</div>
-									</div>
+								<div class="w-full flex-shrink-0">
 									<div
-										class="w-full sm:hidden h-full flex justify-center items-center"
+										class={clsx(
+											"py-3 dynadark:[--transparency:50%] [--transparency:25%] px-4 w-full flex transition-colors duration-300 flex-shrink text-left border-b-2 border-solid border-foreground-muted-alt rounded-tl-[9.5px] rounded-tr-[10px] overflow-hidden",
+											{
+												"text-accent-foreground":
+													file.result,
+												"text-foreground": !file.result,
+											},
+										)}
+										style="background-color: color-mix(in srgb, var(--{file.result
+											? 'accent-bg'
+											: 'bg'}), transparent var(--transparency)); backdrop-filter: blur({data.isFirefox
+											? 0
+											: 18}px);"
 									>
-										<ArrowRight
-											class="w-6 h-6 text-accent-foreground"
-										/>
-									</div>
-									<div class="w-full sm:hidden block h-full">
-										<Dropdown
-											options={converter.supportedFormats}
-											bind:selected={files.files[
-												files.files.length - 1 - i
-											].to}
-											onselect={() => {
-												file.result = null;
+										<div
+											class="w-full grid grid-cols-1 grid-rows-1"
+										>
+											{#if processings[files.files.length - i - 1]}
+												<div
+													class="w-full row-start-1 col-start-1 h-full flex items-center pr-4"
+													transition:blur={{
+														blurMultiplier: 6,
+														duration,
+														easing: quintOut,
+														scale: {
+															start: 0.9,
+															end: 1,
+														},
+													}}
+												>
+													<ProgressBar
+														min={0}
+														max={100}
+														progress={file.converter
+															?.reportsProgress
+															? file.result
+																? 100
+																: file.progress
+															: null}
+													/>
+												</div>
+											{:else}
+												<h3
+													class="row-start-1 col-start-1 whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+													transition:blur={{
+														blurMultiplier: 6,
+														duration,
+														easing: quintOut,
+														scale: {
+															start: 0.9,
+															end: 1,
+														},
+													}}
+												>
+													{file.file.name}
+												</h3>
+											{/if}
+										</div>
+										<button
+											onclick={() => {
+												// delete the file from the list
+												files.files =
+													files.files.filter(
+														(f) => f !== file,
+													);
+												if (files.files.length === 0)
+													goto("/");
 											}}
-										/>
+											class="ml-2 mr-1 flex-shrink-0"
+										>
+											<XIcon size="24" />
+										</button>
 									</div>
-								{:else}
-									<span
-										class="py-2 px-3 font-display bg-foreground-failure text-white rounded-xl"
-										>{file.from}</span
+								</div>
+								<div
+									class="flex gap-3 justify-normal flex-grow w-full h-full"
+								>
+									<div
+										class="flex flex-col items-end gap-3 w-full"
 									>
+										<div
+											class="flex items-end gap-3 w-full h-full px-5"
+										>
+											<div
+												class="flex items-center justify-center gap-3 w-full pb-4"
+											>
+												{#if converter && converter.supportedFormats.includes(file.from)}
+													<span>from</span>
+													<span
+														class="py-2 px-3 font-display bg-foreground text-background rounded-xl"
+														>{file.from}</span
+													>
+													<span>to</span>
+													<div class="inline-flex">
+														<Dropdown
+															options={converter.supportedFormats}
+															bind:selected={files
+																.files[
+																files.files
+																	.length -
+																	i -
+																	1
+															].to}
+															onselect={() => {
+																file.result =
+																	null;
+															}}
+														/>
+													</div>
+												{:else}
+													<span
+														class="py-2 px-3 font-display bg-foreground-failure text-white rounded-xl"
+														>{file.from}</span
+													>
 
-									<span class="text-foreground-failure">
-										is not supported!
-									</span>
-								{/if}
-								<button
-									onclick={() => {
-										// delete the file from the list
-										files.files = files.files.filter(
-											(f) => f !== file,
-										);
-										if (files.files.length === 0) goto("/");
-									}}
-									class="ml-2 mr-1 sm:block hidden"
-								>
-									<XIcon size="18" />
-								</button>
-							</div>
-						</div>
-						{#if converter && converter.supportedFormats.includes(file.from)}
-							<!-- god knows why, but setting opacity > 0.98 causes a z-ordering issue in firefox ??? -->
-							<div
-								class="absolute top-0 -z-50 left-0 w-full h-full rounded-[10px] overflow-hidden opacity-[0.98]"
-							>
-								<div
-									class="bg-cover bg-center w-full h-full"
-									style="background-image: url({file.blobUrl});"
-								></div>
-								<div
-									class="absolute sm:top-0 bottom-0 sm:right-0 sm:w-5/6 h-5/6 w-full sm:h-full"
-								>
-									<ProgressiveBlur
-										direction={isSm ? "bottom" : "right"}
-										endIntensity={128}
-										iterations={6}
-										fadeTo="var(--bg-transparent)"
-									/>
+													<span
+														class="text-foreground-failure"
+													>
+														is not supported!
+													</span>
+												{/if}
+											</div>
+										</div>
+										<!-- <div
+											class="hidden lg:flex gap-4 w-full"
+										>
+											<button
+												class="btn flex-grow flex-shrink-0"
+												onclick={() => convert(file)}
+											>
+												Convert
+											</button>
+											<button
+												class="btn flex-grow flex-shrink-0"
+												disabled={!file.result}
+												onclick={file.download}
+											>
+												Download
+											</button>
+										</div> -->
+									</div>
 								</div>
 							</div>
-						{/if}
+							{#if converter && converter.supportedFormats.includes(file.from)}
+								<!-- god knows why, but setting opacity > 0.98 causes a z-ordering issue in firefox ??? -->
+								<div
+									class="absolute top-[0px] -z-50 left-0 w-full h-full opacity-[0.98] rounded-xl overflow-hidden"
+								>
+									{#if file.blobUrl}
+										<div
+											class="bg-cover bg-center w-full h-full"
+											style="background-image: url({file.blobUrl})"
+											in:blur={{
+												blurMultiplier: 24,
+												scale: {
+													start: 1.1,
+													end: 1,
+												},
+												duration,
+												easing: quintOut,
+											}}
+										></div>
+										<div
+											class="absolute left-0 top-0 pt-[50px] h-full w-full"
+											transition:progBlur={{
+												duration,
+												easing: quintOut,
+											}}
+										>
+											<ProgressiveBlur
+												direction="bottom"
+												endIntensity={64}
+												iterations={8}
+												fadeTo="var(--bg-transparent)"
+											/>
+										</div>
+									{:else}
+										<div
+											class="w-full h-full flex items-center justify-center"
+										>
+											<FileAudioIcon
+												size="96"
+												strokeWidth="1.5"
+												color="var(--fg)"
+												opacity="0.9"
+											/>
+										</div>
+									{/if}
+								</div>
+							{/if}
+						</div>
 					</div>
-				</div>
-			{/each}
-			<div class="w-full h-4 flex-shrink-0"></div>
+				{/each}
+			</div>
 		</div>
 	{/if}
 </div>
@@ -456,9 +565,28 @@
 		opacity: 1 !important;
 	}
 
+	@keyframes processing {
+		0% {
+			transform: scale(1);
+			filter: blur(0px);
+			animation-timing-function: ease-in-out;
+		}
+
+		50% {
+			transform: scale(1.05);
+			filter: blur(4px);
+			animation-timing-function: ease-in-out;
+		}
+
+		100% {
+			transform: scale(1);
+			filter: blur(0px);
+			animation-timing-function: ease-in-out;
+		}
+	}
+
 	.processing {
-		transform: scale(1.05);
-		filter: blur(4px);
+		animation: processing 2000ms infinite;
 		pointer-events: none;
 	}
 

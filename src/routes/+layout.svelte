@@ -11,7 +11,7 @@
 	import { writable } from "svelte/store";
 	import { MoonIcon, SunIcon } from "lucide-svelte";
 	import { browser } from "$app/environment";
-	import { setCookie } from "typescript-cookie";
+	import JSCookie from "js-cookie";
 	let { children, data } = $props();
 
 	let shouldGoBack = writable(false);
@@ -55,14 +55,18 @@
 		if (theme.dark) {
 			document.body.classList.add("dark");
 			document.body.classList.remove("light");
-			setCookie("theme", "dark", {
-				sameSite: "strict",
+			JSCookie.set("theme", "dark", {
+				path: "/",
+				sameSite: "lax",
+				expires: 2147483647,
 			});
 		} else {
 			document.body.classList.add("light");
 			document.body.classList.remove("dark");
-			setCookie("theme", "light", {
-				sameSite: "strict",
+			JSCookie.set("theme", "light", {
+				path: "/",
+				sameSite: "lax",
+				expires: 2147483647,
 			});
 		}
 	});

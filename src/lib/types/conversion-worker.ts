@@ -1,14 +1,14 @@
-import type { IFile } from "./file";
+import { VertFile } from "./file.svelte";
 
 interface ConvertMessage {
 	type: "convert";
-	input: IFile;
+	input: VertFile;
 	to: string;
 }
 
 interface FinishedMessage {
 	type: "finished";
-	output: IFile;
+	output: ArrayBufferLike;
 }
 
 interface LoadedMessage {
