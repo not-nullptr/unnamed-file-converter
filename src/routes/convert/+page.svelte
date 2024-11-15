@@ -207,7 +207,7 @@
 				<h2 class="font-bold text-xl mb-1">Options</h2>
 				<div class="flex flex-col w-full gap-4 mt-2">
 					<div class="flex flex-col gap-3 w-fit">
-						<h3>Output filename (for single image)</h3>
+						<h3>Output filename (for single file)</h3>
 						<div class="grid grid-rows-1 grid-cols-1">
 							<div
 								transition:blur={{
