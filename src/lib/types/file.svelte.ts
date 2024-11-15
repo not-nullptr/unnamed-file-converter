@@ -34,7 +34,6 @@ export class VertFile {
 	}
 
 	public async convert() {
-		console.log(this.converter);
 		if (!this.converter) throw new Error("No converter found");
 		this.result = null;
 		this.progress = 0;

@@ -35,8 +35,8 @@
 			const file = files.files[i];
 			const converter = converters.find(
 				(c) =>
-					c.supportedFormats.includes(file.from) &&
-					c.supportedFormats.includes(file.to),
+					c.supportedFormats.includes(file.from.toLowerCase()) &&
+					c.supportedFormats.includes(file.to.toLowerCase()),
 			);
 			if (!converter) throw new Error("No converter found");
 			required.push(converter);

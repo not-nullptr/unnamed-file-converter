@@ -20,7 +20,7 @@
 					const from =
 						"." + f.name.toLowerCase().split(".").slice(-1);
 					const converter = converters.find((c) =>
-						c.supportedFormats.includes(from),
+						c.supportedFormats.includes(from.toLowerCase()),
 					);
 					if (!converter) resolve();
 					const to =
