@@ -14,6 +14,7 @@
 	let { options, selected = $bindable(), onselect }: Props = $props();
 
 	let open = $state(false);
+	let hover = $state(false);
 	let isUp = $state(false);
 	let dropdown = $state<HTMLDivElement>();
 
@@ -50,6 +51,8 @@
 	<button
 		class="font-display w-full min-w-fit justify-between overflow-hidden relative cursor-pointer px-3 border-2 border-solid flex items-center bg-background border-foreground-muted-alt rounded-xl p-2 focus:!outline-none"
 		onclick={toggle}
+		onmouseenter={() => (hover = true)}
+		onmouseleave={() => (hover = false)}
 	>
 		<!-- <p>{selected}</p> -->
 		<div
@@ -105,6 +108,7 @@
 	</button>
 	{#if open}
 		<div
+			style={hover ? "will-change: opacity, blur, transform" : ""}
 			transition:blur={{
 				duration,
 				easing: quintOut,

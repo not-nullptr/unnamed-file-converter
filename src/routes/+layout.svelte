@@ -12,9 +12,12 @@
 	import { MoonIcon, SunIcon } from "lucide-svelte";
 	import { browser } from "$app/environment";
 	import JSCookie from "js-cookie";
+	import { onMount } from "svelte";
 	let { children, data } = $props();
 
 	let shouldGoBack = writable(false);
+	let navbar = $state<HTMLDivElement>();
+	let hover = $state(false);
 
 	const links = $derived<
 		{
@@ -70,6 +73,19 @@
 			});
 		}
 	});
+
+	onMount(() => {
+		const mouseEnter = () => {
+			hover = true;
+		};
+
+		const mouseLeave = () => {
+			hover = false;
+		};
+
+		navbar?.addEventListener("mouseenter", mouseEnter);
+		navbar?.addEventListener("mouseleave", mouseLeave);
+	});
 </script>
 
 <svelte:head>
@@ -102,6 +118,7 @@
 
 	<div
 		class="w-full max-w-screen-md p-1 border-solid border-2 rounded-2xl border-foreground-muted-alt flex mb-10 mx-auto lg:mt-5"
+		bind:this={navbar}
 	>
 		<div class="md:p-1">
 			<a
@@ -200,6 +217,7 @@
 			<div class="w-full">
 				<div
 					class="absolute top-0 left-0 w-full"
+					style={hover ? "will-change: opacity, blur, transform" : ""}
 					in:blur={{
 						duration,
 						easing: quintOut,
