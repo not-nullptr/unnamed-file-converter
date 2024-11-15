@@ -73,6 +73,12 @@
 			promises.push(
 				(async (i) => {
 					await convert(files.files[i], i);
+					window.plausible("Convert", {
+						props: {
+							"Format from": files.files[i].from,
+							"Format to": files.files[i].to,
+						},
+					});
 				})(i),
 			);
 		}
